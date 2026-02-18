@@ -37,7 +37,7 @@ public class PlayerMove : MonoBehaviour
 			moveInput.x = horizontal;
 
 			// Jump when the Space key is pressed
-			if (Keyboard.current.wKey.wasPressedThisFrame)
+			if (Keyboard.current.spaceKey.wasPressedThisFrame)
 			{
 				Jump();
 			}
