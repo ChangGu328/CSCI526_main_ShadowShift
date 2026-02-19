@@ -3,12 +3,12 @@ using UnityEngine;
 public class Pressable : Switch
 {
 	private Vector2 originLocalScale; // Original local scale of the object
-	private Vector3 originPosition; // Original world position of the object
+	private Vector3 originLocalPosition; // Original local position of the object
 
 	private void Start()
 	{
 		originLocalScale = transform.localScale; // Store initial scale
-		originPosition = transform.position; // Store initial position
+		originLocalPosition = transform.localPosition; // Store initial LOCAL position
 	}
 
 	private void OnTriggerExit2D(Collider2D collision)
@@ -49,8 +49,8 @@ public class Pressable : Switch
 		// Scale the object on the Y axis
 		transform.localScale = new Vector2(originLocalScale.x, originLocalScale.y * yScale);
 
-		// Adjust position so the object appears to be pressed from top
+		// Adjust local position so the object appears to be pressed from top
 		float deltaY = (originLocalScale.y - transform.localScale.y) * 0.5f;
-		transform.position = originPosition - new Vector3(0, deltaY, 0);
+		transform.localPosition = originLocalPosition - new Vector3(0, deltaY, 0);
 	}
 }
