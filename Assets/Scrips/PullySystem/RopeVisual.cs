@@ -95,7 +95,11 @@ public class RopeVisual : MonoBehaviour
         Vector3 leftAnchorCenter = GetAnchorWorldCenter(leftAnchor);
         Vector3 rightAnchorCenter = GetAnchorWorldCenter(rightAnchor);
         
-        float topY = pully.position.y;
+        float topY = Mathf.Max(leftAnchorCenter.y, rightAnchorCenter.y) + topOffset;
+        if (pully != null)
+        {
+            topY = Mathf.Max(topY, pully.position.y);
+        }
 
         // anchor X positions (visual center X)
         float topLeftAnchorX = leftAnchorCenter.x;

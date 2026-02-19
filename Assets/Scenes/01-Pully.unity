@@ -474,29 +474,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PulleySystemController
   leftPlatform: {fileID: 645114475}
   rightPlatform: {fileID: 205067519}
-  leftDetector: {fileID: 1128636467}
-  rightDetector: {fileID: 765087665}
-  leftPlatformCollider: {fileID: 0}
-  rightPlatformCollider: {fileID: 0}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  ratio: 1
-  smoothSpeed: 6
-  massInfluence: 0.05
-  massDeadzone: 0.01
-  massAlpha: 0.18
-  massChangeThreshold: 0.02
-  stableDuration: 0.12
-  movementCooldownExtra: 0.08
-  minMoveDistance: 0.01
-  previewFraction: 0.25
-  externalFollowThreshold: 0.02
-  removalCooldownMultiplier: 2
-  leftMinY: -10
-  leftMaxY: 10
-  rightMinY: -10
-  rightMaxY: 10
+  leftAnchor: {fileID: 442225070}
+  rightAnchor: {fileID: 1731696457}
+  leftJoint: {fileID: 0}
+  rightJoint: {fileID: 0}
+  leftLocalAttach: {x: 0, y: 0.5}
+  rightLocalAttach: {x: 0, y: 0.5}
+  totalRopeLength: 12
+  ropeSlack: 0
+  driveEpsilon: 0.0005
+  minSegmentLength: 0.1
+  maxSegmentLength: 30
+  solveLerp: 1
+  autoInitializeFromCurrentPose: 1
+  autoFindAnchorsByName: 1
+  leftAnchorName: LeftAnchor
+  rightAnchorName: RightAnchor
+  autoCreateDistanceJoints: 1
+  autoConfigureJointSettings: 1
 --- !u!4 &437625559 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1775508413411688324, guid: f905be532b281324886ad193e63c9b6f, type: 3}
@@ -2070,6 +2065,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5559330473820697015, guid: 22b9fd61a227a5e4f8bac3de46f02d71, type: 3}
+      propertyPath: m_Mass
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8482350971752954959, guid: 22b9fd61a227a5e4f8bac3de46f02d71, type: 3}
       propertyPath: m_Name
       value: Box (2)
@@ -2849,7 +2848,7 @@ Transform:
   m_GameObject: {fileID: 1731696456}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.96, y: 3.66, z: 0}
+  m_LocalPosition: {x: 7.66, y: 3, z: 0}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -3535,6 +3534,38 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1775508413411688324, guid: f905be532b281324886ad193e63c9b6f, type: 3}
   m_PrefabInstance: {fileID: 2094600969}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2102738740 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3593300883726010399, guid: d63028028df014208bb8c1a1c3e54799, type: 3}
+  m_PrefabInstance: {fileID: 1609576101296611529}
+  m_PrefabAsset: {fileID: 0}
+--- !u!50 &2102738744
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2102738740}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 20
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1001 &1609576101296611529
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3598,7 +3629,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3593300883726010399, guid: d63028028df014208bb8c1a1c3e54799, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2102738744}
   m_SourcePrefab: {fileID: 100100000, guid: d63028028df014208bb8c1a1c3e54799, type: 3}
 --- !u!1001 &8060642167719049551
 PrefabInstance:
