@@ -3,83 +3,221 @@ using UnityEngine.InputSystem;
 
 public class PlayerMove : MonoBehaviour
 {
-	public float speed = 5f; // Movement speed
-	public bool canJump = false; // Whether the player can jump
-	public float jumpForce = 7f; // Jump strength
+	[Header("Movement")]
+	public float maxMoveSpeed = 6f;
+	public float groundAcceleration = 55f;
+	public float groundDeceleration = 70f;
+	public float airAcceleration = 35f;
+	public float airDeceleration = 30f;
 
-	private Rigidbody2D rb; // Reference to the Rigidbody2D component
-	private bool isGrounded; // Flag to check if the player is on the ground
+	[Header("Jump")]
+	public bool canJump = false;
+	public float jumpForce = 12f;
+	public float coyoteTime = 0.12f;
+	public float jumpBufferTime = 0.12f;
+	[Range(0f, 1f)]
+	public float jumpCutMultiplier = 0.5f;
 
-	void Awake()
+	[Header("Gravity")]
+	public float fallGravityMultiplier = 2f;
+	public float lowJumpGravityMultiplier = 1.5f;
+	public float maxFallSpeed = 18f;
+
+	[Header("Visual Smooth")]
+	public bool useRigidbodyInterpolation = true;
+
+	[Header("Ground Check")]
+	public LayerMask groundMask;
+	public Vector2 groundCheckBoxSize = new Vector2(0.7f, 0.1f);
+	public float groundCheckOffsetY = 0.06f;
+
+	private Rigidbody2D rb;
+	private Collider2D col;
+
+	private float moveInputX;
+	private bool jumpPressedThisFrame;
+	private bool jumpHeld;
+
+	private float coyoteTimer;
+	private float jumpBufferTimer;
+	private bool isGrounded;
+
+	private void Awake()
 	{
-		rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component on Awake
+		rb = GetComponent<Rigidbody2D>();
+		col = GetComponent<Collider2D>();
+
+		if (useRigidbodyInterpolation && rb != null && rb.interpolation == RigidbodyInterpolation2D.None)
+		{
+			rb.interpolation = RigidbodyInterpolation2D.Interpolate;
+		}
+
+		if (groundMask.value == 0)
+		{
+			groundMask = LayerMask.GetMask("Ground", "Box");
+		}
 	}
 
-	void Update()
+	private void OnEnable()
 	{
-		CheckGround(); // Check if the player is on the ground
+		moveInputX = 0f;
+		jumpPressedThisFrame = false;
+		jumpHeld = false;
+		coyoteTimer = 0f;
+		jumpBufferTimer = 0f;
+	}
 
-		Vector2 moveInput = Vector2.zero; // Initialize movement input
+	private void Update()
+	{
+		ReadInput();
+		UpdateTimers();
+	}
+
+	private void FixedUpdate()
+	{
+		isGrounded = CheckGrounded();
+
+		if (isGrounded)
+		{
+			coyoteTimer = coyoteTime;
+		}
+
+		ApplyHorizontalMovement();
+		ApplyJump();
+		ApplyBetterGravity();
+
+		jumpPressedThisFrame = false;
+	}
+
+	private void ReadInput()
+	{
+		float horizontal = 0f;
+		bool keyboardJumpPressed = false;
+		bool keyboardJumpHeld = false;
 
 		if (Keyboard.current != null)
 		{
-			// Support Arrow Keys and A/D for horizontal movement
-			float horizontal = 0f;
-
-			horizontal += Keyboard.current.leftArrowKey.isPressed ? -1f : 0f;
-			horizontal += Keyboard.current.rightArrowKey.isPressed ? 1f : 0f;
-			horizontal += Keyboard.current.aKey.isPressed ? -1f : 0f;
-			horizontal += Keyboard.current.dKey.isPressed ? 1f : 0f;
-
-			// Clamp the final value to avoid speed stacking
-			horizontal = Mathf.Clamp(horizontal, -1f, 1f);
-
-			moveInput.x = horizontal;
-
-			// Jump when the Space key is pressed
-			if (Keyboard.current.spaceKey.wasPressedThisFrame)
+			if (Keyboard.current.leftArrowKey.isPressed || Keyboard.current.aKey.isPressed)
 			{
-				Jump();
+				horizontal -= 1f;
 			}
+
+			if (Keyboard.current.rightArrowKey.isPressed || Keyboard.current.dKey.isPressed)
+			{
+				horizontal += 1f;
+			}
+
+			keyboardJumpPressed = Keyboard.current.wKey.wasPressedThisFrame || Keyboard.current.spaceKey.wasPressedThisFrame;
+			keyboardJumpHeld = Keyboard.current.wKey.isPressed || Keyboard.current.spaceKey.isPressed;
 		}
 
-		// Optional: support gamepad left stick movement
 		if (Gamepad.current != null)
 		{
 			float stickX = Gamepad.current.leftStick.ReadValue().x;
-			moveInput.x = Mathf.Clamp(moveInput.x + stickX, -1f, 1f);
+			horizontal = Mathf.Clamp(horizontal + stickX, -1f, 1f);
+
+			bool gamepadJumpPressed = Gamepad.current.buttonSouth.wasPressedThisFrame;
+			bool gamepadJumpHeld = Gamepad.current.buttonSouth.isPressed;
+			keyboardJumpPressed |= gamepadJumpPressed;
+			keyboardJumpHeld |= gamepadJumpHeld;
 		}
 
-		// Apply horizontal velocity while keeping the current vertical velocity
-		rb.linearVelocity = new Vector2(moveInput.x * speed, rb.linearVelocity.y);
+		moveInputX = Mathf.Clamp(horizontal, -1f, 1f);
+		jumpPressedThisFrame = keyboardJumpPressed;
+		jumpHeld = keyboardJumpHeld;
 	}
 
-	void Jump()
+	private void UpdateTimers()
 	{
-		if (!canJump) return; // Do nothing if jumping is disabled
-		if (!isGrounded) return; // Do nothing if not on the ground
+		if (coyoteTimer > 0f)
+		{
+			coyoteTimer -= Time.deltaTime;
+		}
 
-		// Set upward velocity to make the player jump
-		rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+		if (jumpPressedThisFrame)
+		{
+			jumpBufferTimer = jumpBufferTime;
+		}
+		else if (jumpBufferTimer > 0f)
+		{
+			jumpBufferTimer -= Time.deltaTime;
+		}
 	}
 
-	void CheckGround()
+	private void ApplyHorizontalMovement()
 	{
-		// Detect if the player is standing on "Ground" or "Box"
-		int mask = LayerMask.GetMask("Ground", "Box");
+		float targetSpeed = moveInputX * maxMoveSpeed;
+		float accelRate = Mathf.Abs(targetSpeed) > 0.01f
+			? (isGrounded ? groundAcceleration : airAcceleration)
+			: (isGrounded ? groundDeceleration : airDeceleration);
 
-		RaycastHit2D hit = Physics2D.Raycast(
+		float nextX = Mathf.MoveTowards(rb.linearVelocity.x, targetSpeed, accelRate * Time.fixedDeltaTime);
+		rb.linearVelocity = new Vector2(nextX, rb.linearVelocity.y);
+	}
+
+	private void ApplyJump()
+	{
+		if (!canJump)
+		{
+			return;
+		}
+
+		if (jumpBufferTimer > 0f && coyoteTimer > 0f)
+		{
+			rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+			jumpBufferTimer = 0f;
+			coyoteTimer = 0f;
+		}
+	}
+
+	private void ApplyBetterGravity()
+	{
+		Vector2 velocity = rb.linearVelocity;
+
+		if (velocity.y < 0f)
+		{
+			velocity.y += Physics2D.gravity.y * (fallGravityMultiplier - 1f) * Time.fixedDeltaTime;
+		}
+		else if (velocity.y > 0f && !jumpHeld)
+		{
+			velocity.y += Physics2D.gravity.y * (lowJumpGravityMultiplier - 1f) * Time.fixedDeltaTime;
+			velocity.y = Mathf.Min(velocity.y, jumpForce * jumpCutMultiplier);
+		}
+
+		if (velocity.y < -maxFallSpeed)
+		{
+			velocity.y = -maxFallSpeed;
+		}
+
+		rb.linearVelocity = velocity;
+	}
+
+	private bool CheckGrounded()
+	{
+		if (col != null)
+		{
+			Bounds b = col.bounds;
+			Vector2 origin = new Vector2(b.center.x, b.min.y - groundCheckOffsetY);
+			Collider2D hit = Physics2D.OverlapBox(origin, groundCheckBoxSize, 0f, groundMask);
+			return hit != null;
+		}
+
+		RaycastHit2D hitRay = Physics2D.Raycast(
 			transform.position,
 			Vector2.down,
-			0.6f,
-			mask
+			0.8f,
+			groundMask
 		);
-
-		isGrounded = hit.collider != null; // True if ray hits something
+		return hitRay.collider != null;
 	}
 
 	public void Stop()
 	{
-		rb.linearVelocity = Vector2.zero; // Stop all player movement
+		moveInputX = 0f;
+		jumpPressedThisFrame = false;
+		jumpHeld = false;
+		jumpBufferTimer = 0f;
+		coyoteTimer = 0f;
+		rb.linearVelocity = Vector2.zero;
 	}
 }
