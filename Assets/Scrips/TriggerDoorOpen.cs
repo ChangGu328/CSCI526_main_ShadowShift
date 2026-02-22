@@ -7,7 +7,6 @@ public class TriggerDoorOpen : MonoBehaviour
     public Switch targetDoorSwitch;
     [Min(0f)] public float targetOpenSeconds = 0f;
 
-    private bool previousCurrentIsOn;
     private float targetOpenUntil = -1f;
 
     private void Awake()
@@ -21,10 +20,6 @@ public class TriggerDoorOpen : MonoBehaviour
             }
         }
 
-        if (currentDoorSwitch != null)
-        {
-            previousCurrentIsOn = currentDoorSwitch.isOn;
-        }
     }
 
     private void Update()
@@ -44,12 +39,12 @@ public class TriggerDoorOpen : MonoBehaviour
                 targetDoorSwitch.isOn = true;
             }
 
-            previousCurrentIsOn = currentIsOn;
             return;
         }
 
-        // Trigger once when current switch changes from off -> on.
-        if (currentIsOn && !previousCurrentIsOn)
+        // While current switch stays on, keep extending the target open window.
+        // This makes the target close only after current turns off for targetOpenSeconds.
+        if (currentIsOn)
         {
             targetDoorSwitch.isOn = true;
             targetOpenUntil = Time.time + targetOpenSeconds;
@@ -61,6 +56,5 @@ public class TriggerDoorOpen : MonoBehaviour
             targetOpenUntil = -1f;
         }
 
-        previousCurrentIsOn = currentIsOn;
     }
 }
