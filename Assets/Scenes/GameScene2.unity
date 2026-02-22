@@ -173,11 +173,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9159655064100897981, guid: d63028028df014208bb8c1a1c3e54799, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.94
+      value: -4.49
       objectReference: {fileID: 0}
     - target: {fileID: 9159655064100897981, guid: d63028028df014208bb8c1a1c3e54799, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -11
+      value: -10.97
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -565,6 +565,10 @@ PrefabInstance:
     - target: {fileID: 6505486436535387545, guid: de12a56088824134a8954119370f2847, type: 3}
       propertyPath: m_Name
       value: Hazard (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6505486436535387545, guid: de12a56088824134a8954119370f2847, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8696341454686017129, guid: de12a56088824134a8954119370f2847, type: 3}
       propertyPath: m_LocalScale.x
@@ -1498,6 +1502,7 @@ MonoBehaviour:
   momentumMultiplier: 1
   maxExitSpeed: 500
   exitDirection: 0
+  ignoreAtLevelStartSeconds: 0.2
 --- !u!212 &717755777
 SpriteRenderer:
   serializedVersion: 2
@@ -1782,6 +1787,7 @@ MonoBehaviour:
   momentumMultiplier: 1
   maxExitSpeed: 25
   exitDirection: 0
+  ignoreAtLevelStartSeconds: 0.2
 --- !u!212 &816437519
 SpriteRenderer:
   serializedVersion: 2
@@ -2672,8 +2678,8 @@ MonoBehaviour:
   gateSwitch: {fileID: 1747734818}
   cooldown: 0.2
   zeroVelocity: 0
-  exitOffsetAtoB: {x: 1, y: 0}
-  exitOffsetBtoA: {x: 1, y: 0}
+  exitOffsetAtoB: {x: 3, y: 0}
+  exitOffsetBtoA: {x: 3, y: 0}
 --- !u!1001 &1503072592
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3186,6 +3192,7 @@ MonoBehaviour:
   momentumMultiplier: 2
   maxExitSpeed: 500
   exitDirection: 0
+  ignoreAtLevelStartSeconds: 0.2
 --- !u!114 &1747734818
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3269,6 +3276,10 @@ PrefabInstance:
     - target: {fileID: 4159964532472990399, guid: 606b08becf7b84096937e3e42b822aec, type: 3}
       propertyPath: m_Name
       value: Lamp
+      objectReference: {fileID: 0}
+    - target: {fileID: 4159964532472990399, guid: 606b08becf7b84096937e3e42b822aec, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3684,6 +3695,7 @@ MonoBehaviour:
   momentumMultiplier: 1
   maxExitSpeed: 150
   exitDirection: 1
+  ignoreAtLevelStartSeconds: 0.2
 --- !u!212 &1987209862
 SpriteRenderer:
   serializedVersion: 2

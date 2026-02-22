@@ -15,7 +15,10 @@ public class Portal : MonoBehaviour
     public enum ExitDirection { Right, Left, Up }
 
     protected PortalPair pair;
-    private float lastTeleportTime = -999f;
+
+    // 开局保护：防止出生点 / 初始化瞬间误触发导致第一下被 cooldown 挡
+    [Header("Safety")]
+    public float ignoreAtLevelStartSeconds = 0.2f;
 
     private void Reset()
     {
@@ -27,20 +30,30 @@ public class Portal : MonoBehaviour
         pair = p;
     }
 
-    private bool TryGetPlayer(Collider2D other, out Rigidbody2D rb, out PlayerController pc)
+    // ✅ 用 PlayerMove 来识别“可传送的角色”（主体/分身）
+    private bool TryGetActor(Collider2D other, out Rigidbody2D rb, out PlayerMove pm)
     {
+        pm = other.GetComponentInParent<PlayerMove>();
+        if (pm == null)
+        {
+            rb = null;
+            return false;
+        }
+
         rb = other.attachedRigidbody;
-        if (rb == null) rb = other.GetComponentInParent<Rigidbody2D>();
+        if (rb == null) rb = pm.GetComponent<Rigidbody2D>();
+        if (rb == null) rb = pm.GetComponentInParent<Rigidbody2D>();
 
-        pc = other.GetComponentInParent<PlayerController>();
-        if (pc == null && rb != null) pc = rb.GetComponentInParent<PlayerController>();
-
-        return (rb != null && pc != null);
+        return rb != null;
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D other)
     {
-        if (debugLog) Debug.Log($"[Portal] ENTER by {other.name} root={other.transform.root.name}", this);
+        // ✅ 开局保护期
+        if (Time.timeSinceLevelLoad < ignoreAtLevelStartSeconds)
+            return;
+
+        if (debugLog) Debug.Log($"[Portal] ENTER portal={name} by {other.name} root={other.transform.root.name}", this);
 
         if (pair == null)
         {
@@ -54,15 +67,17 @@ public class Portal : MonoBehaviour
             return;
         }
 
-        if (!TryGetPlayer(other, out var playerRB, out var pc))
+        // ✅ 只认 PlayerMove（主体/分身），避免子物体/检测器误触发
+        if (!TryGetActor(other, out var actorRB, out var pm))
         {
-            if (debugLog) Debug.Log($"[Portal] not player. other={other.name}, attachedRB={(other.attachedRigidbody ? other.attachedRigidbody.name : "null")}", this);
+            if (debugLog) Debug.Log($"[Portal] not actor. other={other.name}", this);
             return;
         }
 
-        if (Time.time - lastTeleportTime < pair.cooldown)
+        // ✅ per-actor cooldown（主体/分身各自冷却，不再用每个门的 lastTeleportTime）
+        if (Time.time - pm.lastPortalTime < pair.cooldown)
         {
-            if (debugLog) Debug.Log("[Portal] cooldown blocked", this);
+            if (debugLog) Debug.Log($"[Portal] cooldown blocked actor={pm.name} dt={(Time.time - pm.lastPortalTime):F3}", this);
             return;
         }
 
@@ -73,9 +88,8 @@ public class Portal : MonoBehaviour
             return;
         }
 
-        // 入口&出口都上冷却，防止来回传
-        lastTeleportTime = Time.time;
-        exitPortal.lastTeleportTime = Time.time;
+        // ✅ 只有“真正准备传送”时才写入 cooldown 时间戳
+        pm.lastPortalTime = Time.time;
 
         // 计算出口方向（既用于速度也用于出生点方向）
         Transform exitT = exitPortal.transform;
@@ -83,9 +97,9 @@ public class Portal : MonoBehaviour
         Vector2 exitDir = targetDirection switch
         {
             ExitDirection.Right => (Vector2)exitT.right,
-            ExitDirection.Left => -(Vector2)exitT.right,
-            ExitDirection.Up => (Vector2)exitT.up,
-            _ => (Vector2)exitT.right
+            ExitDirection.Left  => -(Vector2)exitT.right,
+            ExitDirection.Up    => (Vector2)exitT.up,
+            _                   => (Vector2)exitT.right
         };
 
         // 计算出口位置（沿出口门本地坐标偏移）
@@ -93,25 +107,25 @@ public class Portal : MonoBehaviour
         Vector2 localOffset = pair.GetExitOffsetLocal(this);
         float sideOffset = localOffset.x;
         if (targetDirection == ExitDirection.Right) sideOffset = Mathf.Abs(localOffset.x);
-        if (targetDirection == ExitDirection.Left) sideOffset = -Mathf.Abs(localOffset.x);
+        if (targetDirection == ExitDirection.Left)  sideOffset = -Mathf.Abs(localOffset.x);
 
         Vector2 worldOffset = (Vector2)exitT.right * sideOffset + (Vector2)exitT.up * localOffset.y;
         Vector2 exitPos = (Vector2)exitT.position + worldOffset;
 
         // 先保存入门速度（很重要）
-        Vector2 vIn = playerRB.linearVelocity;
+        Vector2 vIn = actorRB.linearVelocity;
 
-        if (debugLog) Debug.Log($"[Portal] TELEPORT {playerRB.name} -> {exitPortal.name} pos={exitPos}", this);
+        if (debugLog) Debug.Log($"[Portal] TELEPORT {pm.name} -> {exitPortal.name} pos={exitPos}", this);
         if (debugLog) Debug.Log($"BEFORE v={vIn}", this);
 
         // 传送位置
-        playerRB.position = exitPos;
+        actorRB.position = exitPos;
 
         // 如果你勾了 zeroVelocity，那肯定没惯性
         if (pair.zeroVelocity)
         {
-            playerRB.linearVelocity = Vector2.zero;
-            if (debugLog) Debug.Log($"AFTER  v={playerRB.linearVelocity} (zeroVelocity ON)", this);
+            actorRB.linearVelocity = Vector2.zero;
+            if (debugLog) Debug.Log($"AFTER  v={actorRB.linearVelocity} (zeroVelocity ON)", this);
             return;
         }
 
@@ -119,21 +133,20 @@ public class Portal : MonoBehaviour
         if (redirectMomentum)
         {
             float speed = vIn.magnitude * momentumMultiplier;
-
             Vector2 vOut = exitDir.normalized * speed;
 
             // 限速
             if (vOut.magnitude > maxExitSpeed)
                 vOut = vOut.normalized * maxExitSpeed;
 
-            playerRB.linearVelocity = vOut;
+            actorRB.linearVelocity = vOut;
         }
         else
         {
             // 不转向：直接保留入门速度（默认惯性）
-            playerRB.linearVelocity = vIn;
+            actorRB.linearVelocity = vIn;
         }
 
-        if (debugLog) Debug.Log($"AFTER  v={playerRB.linearVelocity}", this);
+        if (debugLog) Debug.Log($"AFTER  v={actorRB.linearVelocity}", this);
     }
 }

@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerMove : MonoBehaviour
 {
+	[HideInInspector] public float lastPortalTime = -999f;
 	[Header("Movement")]
 	public float maxMoveSpeed = 6f;
 	public float groundAcceleration = 55f;
