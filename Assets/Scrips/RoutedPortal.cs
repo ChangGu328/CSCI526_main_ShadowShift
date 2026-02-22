@@ -19,6 +19,11 @@ public class RoutedPortal : MonoBehaviour
         public float holdOpenSeconds = 3f;     // 满足条件后保持N秒
         public bool refreshWhilePressed = true;// 持续站着就续命
 
+        [Header("Per-route momentum bonus (optional)")]
+        public bool useVerticalBonus = false;
+        public float verticalMomentumBonus = 0f;
+        public float verticalSpeedThreshold = 0.05f;
+
         [Header("Door control (optional)")]
         public Switch[] doorSwitches;          // 可同时控制多个门开关（入口/出口）
 
@@ -185,6 +190,10 @@ public class RoutedPortal : MonoBehaviour
         if (redirectMomentum)
         {
             float speed = vIn.magnitude * momentumMultiplier;
+            if (route.useVerticalBonus && Mathf.Abs(vIn.y) > route.verticalSpeedThreshold)
+            {
+                speed += route.verticalMomentumBonus;
+            }
 
             Vector2 dir = (exitDirection == ExitDirection.Right)
                 ? (Vector2)exitT.right

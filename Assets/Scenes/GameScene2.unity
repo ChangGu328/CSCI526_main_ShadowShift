@@ -278,7 +278,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2251428795294128827, guid: ad17fe823b0de466a93dc7593e58f368, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.06
+      value: 7.8199997
       objectReference: {fileID: 0}
     - target: {fileID: 2251428795294128827, guid: ad17fe823b0de466a93dc7593e58f368, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1420,6 +1420,9 @@ MonoBehaviour:
     gateRequired: 1
     holdOpenSeconds: 9
     refreshWhilePressed: 1
+    useVerticalBonus: 1
+    verticalMomentumBonus: 10
+    verticalSpeedThreshold: 0.05
     doorSwitches:
     - {fileID: 633689198}
     - {fileID: 717755782}
@@ -1430,6 +1433,9 @@ MonoBehaviour:
     gateRequired: 1
     holdOpenSeconds: 6
     refreshWhilePressed: 1
+    useVerticalBonus: 0
+    verticalMomentumBonus: 0
+    verticalSpeedThreshold: 0.05
     doorSwitches:
     - {fileID: 633689198}
     - {fileID: 816437523}
@@ -1438,7 +1444,7 @@ MonoBehaviour:
   zeroVelocity: 0
   redirectMomentum: 1
   momentumMultiplier: 1
-  maxExitSpeed: 25
+  maxExitSpeed: 500
   exitDirection: 0
   exitOffsetLocal: {x: 1, y: 0}
   debugLog: 1
@@ -1490,8 +1496,6 @@ MonoBehaviour:
   debugLog: 1
   redirectMomentum: 1
   momentumMultiplier: 1
-  verticalMomentumBonus: 300
-  verticalSpeedThreshold: 0.05
   maxExitSpeed: 500
   exitDirection: 0
 --- !u!212 &717755777
@@ -1776,8 +1780,6 @@ MonoBehaviour:
   debugLog: 1
   redirectMomentum: 1
   momentumMultiplier: 1
-  verticalMomentumBonus: 0
-  verticalSpeedThreshold: 0.05
   maxExitSpeed: 25
   exitDirection: 0
 --- !u!212 &816437519
@@ -2461,7 +2463,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1775508413411688324, guid: f905be532b281324886ad193e63c9b6f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 5.03
+      value: 7.79
       objectReference: {fileID: 0}
     - target: {fileID: 1775508413411688324, guid: f905be532b281324886ad193e63c9b6f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3182,8 +3184,6 @@ MonoBehaviour:
   debugLog: 1
   redirectMomentum: 1
   momentumMultiplier: 2
-  verticalMomentumBonus: 0
-  verticalSpeedThreshold: 0.05
   maxExitSpeed: 500
   exitDirection: 0
 --- !u!114 &1747734818
@@ -3682,8 +3682,6 @@ MonoBehaviour:
   debugLog: 1
   redirectMomentum: 1
   momentumMultiplier: 1
-  verticalMomentumBonus: 5
-  verticalSpeedThreshold: 0.05
   maxExitSpeed: 150
   exitDirection: 1
 --- !u!212 &1987209862
