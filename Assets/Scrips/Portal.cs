@@ -12,7 +12,7 @@ public class Portal : MonoBehaviour
     public float maxExitSpeed = 25f;          // 限速，防止飞太远
     public ExitDirection exitDirection = ExitDirection.Right;
 
-    public enum ExitDirection { Right, Up }
+    public enum ExitDirection { Right, Left, Up }
 
     protected PortalPair pair;
     private float lastTeleportTime = -999f;
@@ -48,6 +48,12 @@ public class Portal : MonoBehaviour
             return;
         }
 
+        if (!pair.IsGateOpen())
+        {
+            if (debugLog) Debug.Log("[Portal] gate closed (switch is off).", this);
+            return;
+        }
+
         if (!TryGetPlayer(other, out var playerRB, out var pc))
         {
             if (debugLog) Debug.Log($"[Portal] not player. other={other.name}, attachedRB={(other.attachedRigidbody ? other.attachedRigidbody.name : "null")}", this);
@@ -71,10 +77,25 @@ public class Portal : MonoBehaviour
         lastTeleportTime = Time.time;
         exitPortal.lastTeleportTime = Time.time;
 
-        // 计算出口位置（沿出口门本地坐标偏移）
-        Vector2 localOffset = pair.GetExitOffsetLocal(this);
+        // 计算出口方向（既用于速度也用于出生点方向）
         Transform exitT = exitPortal.transform;
-        Vector2 worldOffset = (Vector2)exitT.right * localOffset.x + (Vector2)exitT.up * localOffset.y;
+        ExitDirection targetDirection = exitPortal.exitDirection;
+        Vector2 exitDir = targetDirection switch
+        {
+            ExitDirection.Right => (Vector2)exitT.right,
+            ExitDirection.Left => -(Vector2)exitT.right,
+            ExitDirection.Up => (Vector2)exitT.up,
+            _ => (Vector2)exitT.right
+        };
+
+        // 计算出口位置（沿出口门本地坐标偏移）
+        // 当出口方向是 Left/Right 时，自动把 x 偏移朝向与 exitDirection 一致的那一侧
+        Vector2 localOffset = pair.GetExitOffsetLocal(this);
+        float sideOffset = localOffset.x;
+        if (targetDirection == ExitDirection.Right) sideOffset = Mathf.Abs(localOffset.x);
+        if (targetDirection == ExitDirection.Left) sideOffset = -Mathf.Abs(localOffset.x);
+
+        Vector2 worldOffset = (Vector2)exitT.right * sideOffset + (Vector2)exitT.up * localOffset.y;
         Vector2 exitPos = (Vector2)exitT.position + worldOffset;
 
         // 先保存入门速度（很重要）
@@ -99,11 +120,7 @@ public class Portal : MonoBehaviour
         {
             float speed = vIn.magnitude * momentumMultiplier;
 
-            Vector2 dir = (exitDirection == ExitDirection.Right)
-                ? (Vector2)exitT.right
-                : (Vector2)exitT.up;
-
-            Vector2 vOut = dir.normalized * speed;
+            Vector2 vOut = exitDir.normalized * speed;
 
             // 限速
             if (vOut.magnitude > maxExitSpeed)

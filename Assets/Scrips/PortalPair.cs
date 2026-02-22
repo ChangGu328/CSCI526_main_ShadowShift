@@ -6,6 +6,9 @@ public class PortalPair : MonoBehaviour
     public Portal portalA;
     public Portal portalB;
 
+    [Header("Optional Gate Switch")]
+    public Switch gateSwitch;
+
     [Header("Teleport")]
     public float cooldown = 0.2f;
     public bool zeroVelocity = false;
@@ -38,6 +41,8 @@ public class PortalPair : MonoBehaviour
     // ⭐⭐ 新增：默认永远开门（旧关卡不受影响）
     public virtual bool IsGateOpen()
     {
-        return true;
+        // If no switch is linked, keep backward-compatible behavior (always open).
+        if (gateSwitch == null) return true;
+        return gateSwitch.isOn;
     }
 }

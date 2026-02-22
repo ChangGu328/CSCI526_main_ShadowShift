@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(Collider2D))]
 public class RoutedPortal : MonoBehaviour
@@ -17,6 +18,9 @@ public class RoutedPortal : MonoBehaviour
         [Header("Hold open (seconds)")]
         public float holdOpenSeconds = 3f;     // 满足条件后保持N秒
         public bool refreshWhilePressed = true;// 持续站着就续命
+
+        [Header("Door control (optional)")]
+        public Switch[] doorSwitches;          // 可同时控制多个门开关（入口/出口）
 
         [HideInInspector] public float openUntilTime = -999f;
 
@@ -48,6 +52,7 @@ public class RoutedPortal : MonoBehaviour
             if (!gateRequired) return true;
             return Time.time <= openUntilTime;
         }
+
     }
 
     [Header("Routes (top = higher priority)")]
@@ -81,7 +86,41 @@ public class RoutedPortal : MonoBehaviour
     {
         if (routes == null) return;
         for (int i = 0; i < routes.Length; i++)
-            if (routes[i] != null) routes[i].TickTimer();
+        {
+            if (routes[i] == null) continue;
+            routes[i].TickTimer();
+        }
+
+        SyncAggregatedDoorStates();
+    }
+
+    private void SyncAggregatedDoorStates()
+    {
+        // 同一扇门可被多条 route 控制：只要任一路线打开，就保持打开。
+        var aggregatedStates = new Dictionary<Switch, bool>();
+
+        for (int i = 0; i < routes.Length; i++)
+        {
+            var route = routes[i];
+            if (route == null) continue;
+
+            bool isOpen = route.IsOpenNow();
+
+            if (route.doorSwitches == null) continue;
+            for (int j = 0; j < route.doorSwitches.Length; j++)
+            {
+                var sw = route.doorSwitches[j];
+                if (sw == null) continue;
+
+                if (aggregatedStates.TryGetValue(sw, out bool current))
+                    aggregatedStates[sw] = current || isOpen;
+                else
+                    aggregatedStates.Add(sw, isOpen);
+            }
+        }
+
+        foreach (var kv in aggregatedStates)
+            kv.Key.isOn = kv.Value;
     }
 
     private bool TryGetPlayer(Collider2D other, out Rigidbody2D rb, out PlayerController pc)
@@ -95,7 +134,7 @@ public class RoutedPortal : MonoBehaviour
         return (rb != null && pc != null);
     }
 
-    private Transform PickExit()
+    private Route PickRoute()
     {
         if (routes == null) return null;
 
@@ -104,7 +143,7 @@ public class RoutedPortal : MonoBehaviour
         {
             var r = routes[i];
             if (r == null || r.exit == null) continue;
-            if (r.IsOpenNow()) return r.exit;
+            if (r.IsOpenNow()) return r;
         }
 
         // 如果你想：没任何路线开就不传送 => return null
@@ -118,12 +157,13 @@ public class RoutedPortal : MonoBehaviour
         if (!TryGetPlayer(other, out var playerRB, out var pc))
             return;
 
-        Transform exitT = PickExit();
-        if (exitT == null)
+        Route route = PickRoute();
+        if (route == null)
         {
             if (debugLog) Debug.Log("[RoutedPortal] No route open -> blocked", this);
             return;
         }
+        Transform exitT = route.exit;
 
         lastTeleportTime = Time.time;
 
