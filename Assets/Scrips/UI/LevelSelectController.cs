@@ -11,7 +11,7 @@ public class LevelSelectController : MonoBehaviour
     public string level2Scene = "01-Pully";
 
     [Tooltip("Scene name for Level 3 (not implemented)")]
-    public string level3Scene = "Portal";
+    public string level3Scene = "GameScene2";
 
     [Tooltip("Name of main menu scene to return to")]
     public string mainMenuScene = "MainMenu";
@@ -43,9 +43,13 @@ public class LevelSelectController : MonoBehaviour
     // Called by Level 3 button (not implemented: only debug)
     public void OnLevel3Button()
     {
-        Debug.LogWarning($"Level 3 ('{level3Scene}') not implemented yet. No action taken.");
-        // If you want later to load the scene, replace the two lines above with:
-        // SceneManager.LoadScene(level3Scene);
+        if (string.IsNullOrEmpty(level3Scene))
+        {
+            Debug.LogError("LevelSelectController: level3Scene is empty.");
+            return;
+        }
+        Debug.Log($"Loading Level 2 -> {level3Scene}");
+        SceneManager.LoadScene(level3Scene);
     }
 
     // Called by Back button
