@@ -8,16 +8,16 @@ public class RoutedPortal : MonoBehaviour
     public class Route
     {
         [Header("Where to exit")]
-        public Transform exit;                 // 出口门/出口点
+        public Transform exit;                 //Exit gate/exit point
 
         [Header("Gate condition (optional)")]
-        public ExclusivePlate bodyPlate;       // 主体按钮（可共用）
-        public ExclusivePlate soulPlate;       // 影子按钮（每条路线可不同）
+        public ExclusivePlate bodyPlate;       // Main body button (can be shared)
+        public ExclusivePlate soulPlate;       // Shadow button (different for each route)
         public bool gateRequired = true;
 
         [Header("Hold open (seconds)")]
-        public float holdOpenSeconds = 3f;     // 满足条件后保持N秒
-        public bool refreshWhilePressed = true;// 持续站着就续命
+        public float holdOpenSeconds = 3f;     // Hold open for N seconds after meeting conditions
+        public bool refreshWhilePressed = true;// Standing will prolong your life
 
         [Header("Per-route momentum bonus (optional)")]
         public bool useVerticalBonus = false;
@@ -25,7 +25,7 @@ public class RoutedPortal : MonoBehaviour
         public float verticalSpeedThreshold = 0.05f;
 
         [Header("Door control (optional)")]
-        public Switch[] doorSwitches;          // 可同时控制多个门开关（入口/出口）
+        public Switch[] doorSwitches;          // It can control the opening and closing of multiple doors (entrance/exit) simultaneously.
 
         [HideInInspector] public float openUntilTime = -999f;
 
@@ -101,7 +101,7 @@ public class RoutedPortal : MonoBehaviour
 
     private void SyncAggregatedDoorStates()
     {
-        // 同一扇门可被多条 route 控制：只要任一路线打开，就保持打开。
+        // The same door can be controlled by multiple routes: it will remain open as long as any one route is open.
         var aggregatedStates = new Dictionary<Switch, bool>();
 
         for (int i = 0; i < routes.Length; i++)
@@ -143,7 +143,7 @@ public class RoutedPortal : MonoBehaviour
     {
         if (routes == null) return null;
 
-        // 优先选择“当前打开”的路线（数组越靠前优先级越高）
+        // Prioritize selecting "currently open" routes (the earlier in the array, the higher the priority)
         for (int i = 0; i < routes.Length; i++)
         {
             var r = routes[i];
@@ -151,7 +151,7 @@ public class RoutedPortal : MonoBehaviour
             if (r.IsOpenNow()) return r;
         }
 
-        // 如果你想：没任何路线开就不传送 => return null
+        // If you want: no routes open => return null
         return null;
     }
 

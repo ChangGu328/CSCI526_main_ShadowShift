@@ -7,7 +7,7 @@ public class DoorOpen : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // 检查是否碰到的是玩家（检测父物体是否有 PlayerController）
+        // Check if the object encountered is a player (check if the parent object has a PlayerController).
         PlayerController player = other.GetComponentInParent<PlayerController>();
 
         if (player != null)
