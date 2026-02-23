@@ -1644,11 +1644,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!1 &801775533 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2538938845418166580, guid: f905be532b281324886ad193e63c9b6f, type: 3}
-  m_PrefabInstance: {fileID: 1486306796}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &884874473
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3366,8 +3361,14 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  raiseStep: 0.2
+  raiseStep: 0
   maxRaiseAttempts: 10
+  pullyExitOffset: 0.05
+  forceExitOnRight: 1
+  debugDrawPoints: 0
+  debugPointSize: 0.06
+  debugDrawRaycasts: 0
+  debugDrawPulleyRefs: 0
 --- !u!120 &1915769470
 LineRenderer:
   serializedVersion: 3
