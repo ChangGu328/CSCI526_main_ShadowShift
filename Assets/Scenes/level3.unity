@@ -2192,7 +2192,7 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: 'You win!
 
-    Press R to restart. '
+    Press L to enter level choice. '
 --- !u!222 &1003224226
 CanvasRenderer:
   m_ObjectHideFlags: 0

@@ -16,6 +16,12 @@ public class Terminal : MonoBehaviour
         if (CollectibleManager.IsInitialized && CollectibleManager.Instance.IsAllCollected())
             Debug.Log("Game over with All Collectible Collected");
         
+        // press L to enter level choice menu
+        if (Keyboard.current.lKey.wasPressedThisFrame)
+        {
+            Time.timeScale = 1f; // recover time
+            SceneManager.LoadScene("LevelSelect");
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
