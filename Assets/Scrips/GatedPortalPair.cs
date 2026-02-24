@@ -8,8 +8,8 @@ public class GatedPortalPair : PortalPair
     public bool gateRequired = true;
 
     [Header("Hold Open (seconds)")]
-    public float holdOpenSeconds = 2f;   // ✅ 门开启后保持N秒（可调）
-    public bool refreshWhilePressed = true; // ✅ 两人一直踩着时是否一直刷新计时
+    public float holdOpenSeconds = 2f;   // The door remains open for N seconds (adjustable).
+    public bool refreshWhilePressed = true; // Does the timer keep refreshing while the two people are constantly stepping on it
 
     [Header("Visual")]
     public bool controlPortalCollider = true;
@@ -24,10 +24,10 @@ public class GatedPortalPair : PortalPair
         UpdateGateVisual();
     }
 
-    // ⭐ override 父类方法（关键！）
+    // Override the parent class method
     public override bool IsGateOpen()
     {
-        // 计时器 > 0 就保持开启
+        // The timer > 0 keeps the gate open
         return openTimer > 0f;
     }
 
@@ -35,7 +35,7 @@ public class GatedPortalPair : PortalPair
     {
         bool bothPressedNow = IsBothPressed();
 
-        // 触发开启：两者踩对一次 -> 直接把计时器拉满
+        // Trigger opening: both pressed once -> directly pull the timer to full
         if (bothPressedNow)
         {
             if (refreshWhilePressed)
@@ -44,15 +44,15 @@ public class GatedPortalPair : PortalPair
             }
             else
             {
-                // 不刷新：只在“刚刚同时踩到”的瞬间触发一次
-                // 用一个小技巧：只有当 timer <= 0 才重新开
+                // Don't refresh: only trigger once "both pressed"
+                // Use a small trick: only re-open when timer <= 0
                 if (openTimer <= 0f)
                     openTimer = holdOpenSeconds;
             }
         }
         else
         {
-            // 没踩着就倒计时
+            // Not both pressed: count down if the timer is running
             if (openTimer > 0f)
                 openTimer -= Time.deltaTime;
         }

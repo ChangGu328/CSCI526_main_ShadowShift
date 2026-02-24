@@ -4,7 +4,7 @@ public class GatedPortal : Portal
 {
     protected override void OnTriggerEnter2D(Collider2D other)
     {
-        // 门没开就不让传
+        // They won't let anyone in if the door isn't open.
         if (pair != null && !pair.IsGateOpen())
         {
             if (debugLog) Debug.Log("[GatedPortal] Gate closed.", this);

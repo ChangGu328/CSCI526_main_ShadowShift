@@ -30,7 +30,7 @@ public class PortalPair : MonoBehaviour
         return null;
     }
 
-    // Portal.cs 调用拿“相对出口门方向”的 offset
+    // Portal.cs calls the function to retrieve the offset relative to the exit gate direction.
     public Vector2 GetExitOffsetLocal(Portal from)
     {
         if (from == portalA) return exitOffsetAtoB;
@@ -38,7 +38,7 @@ public class PortalPair : MonoBehaviour
         return Vector2.zero;
     }
 
-    // ⭐⭐ 新增：默认永远开门（旧关卡不受影响）
+    // New Feature: Doors are always open by default (old levels are unaffected)
     public virtual bool IsGateOpen()
     {
         // If no switch is linked, keep backward-compatible behavior (always open).

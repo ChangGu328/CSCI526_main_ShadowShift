@@ -12,7 +12,7 @@ public class Terminal : MonoBehaviour
     {
         if (!isGameOver) return;
 
-        // todo: 所有星星都被收集
+        // todo: All stars have been collected.
         if (CollectibleManager.IsInitialized && CollectibleManager.Instance.IsAllCollected())
             Debug.Log("Game over with All Collectible Collected");
         
@@ -29,3 +29,4 @@ public class Terminal : MonoBehaviour
         }
     }
 }
+
