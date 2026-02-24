@@ -5,16 +5,16 @@ public class LevelSelectController : MonoBehaviour
 {
     [Header("Scene names")]
     [Tooltip("Scene name for Level 1")]
-    public string level1Scene = "GameScene";
+    string level1Scene = "level1";
 
     [Tooltip("Scene name for Level 2")]
-    public string level2Scene = "01-Pully";
+    string level2Scene = "level2";
 
     [Tooltip("Scene name for Level 3 (not implemented)")]
-    public string level3Scene = "GameScene2";
+    string level3Scene = "level3";
 
     [Tooltip("Name of main menu scene to return to")]
-    public string mainMenuScene = "MainMenu";
+    string mainMenuScene = "MainMenu";
 
     // Called by Level 1 button
     public void OnLevel1Button()
