@@ -209,6 +209,8 @@ public class PulleySystemController : MonoBehaviour
         int count = platform.GetContacts(contactBuffer);
         uniqueBodies.Clear();
         float total = 0f;
+        float platformTopY = GetPlatformTopY(platform);
+        const float aboveTopTolerance = 0.01f;
 
         for (int i = 0; i < count; i++)
         {
@@ -218,14 +220,50 @@ public class PulleySystemController : MonoBehaviour
             Rigidbody2D rb = col.attachedRigidbody;
             if (rb == null || rb == platform) continue;
             if (rb.bodyType != RigidbodyType2D.Dynamic) continue;
-            // Only count bodies resting ON TOP of the platform
-            if (rb.position.y <= platform.position.y) continue;
+            // Count only bodies whose center is above the actual top surface of the
+            // platform collider. Using platform.position.y breaks when collider is offset.
+            if (rb.position.y <= platformTopY - aboveTopTolerance) continue;
             if (!uniqueBodies.Add(rb)) continue;
 
             total += rb.mass;
         }
 
         return total;
+    }
+
+    private float GetPlatformTopY(Rigidbody2D platform)
+    {
+        Collider2D[] source;
+        if (platform == leftPlatform)
+        {
+            source = leftSolidColliders;
+        }
+        else if (platform == rightPlatform)
+        {
+            source = rightSolidColliders;
+        }
+        else
+        {
+            source = GetSolidColliders(platform);
+        }
+
+        float top = platform.position.y;
+        bool found = false;
+        for (int i = 0; i < source.Length; i++)
+        {
+            Collider2D col = source[i];
+            if (col == null || !col.enabled || col.isTrigger) continue;
+            if (col.attachedRigidbody != platform) continue;
+
+            float candidateTop = col.bounds.max.y;
+            if (!found || candidateTop > top)
+            {
+                top = candidateTop;
+                found = true;
+            }
+        }
+
+        return top;
     }
 
     // ─────────────────── Ground Blocking ───────────────────
