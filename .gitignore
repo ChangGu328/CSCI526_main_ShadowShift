@@ -28,6 +28,7 @@
 # Visual Studio cache directory
 .vs/
 .vscode/
+.idea/
 .DS_Store
 
 # Gradle cache directory
@@ -39,6 +40,7 @@ ExportedObj/
 *.csproj
 *.unityproj
 *.sln
+*.slnx
 *.suo
 *.tmp
 *.user
@@ -75,3 +77,7 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Unity recovery artifacts
+/[Aa]ssets/_Recovery/
+/[Aa]ssets/_Recovery.meta
