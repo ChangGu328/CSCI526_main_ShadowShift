@@ -108,8 +108,8 @@ public class PlayerMove : MonoBehaviour
 				horizontal += 1f;
 			}
 
-			keyboardJumpPressed = Keyboard.current.wKey.wasPressedThisFrame || Keyboard.current.spaceKey.wasPressedThisFrame;
-			keyboardJumpHeld = Keyboard.current.wKey.isPressed || Keyboard.current.spaceKey.isPressed;
+			keyboardJumpPressed = Keyboard.current.wKey.wasPressedThisFrame;
+			keyboardJumpHeld = Keyboard.current.wKey.isPressed;
 		}
 
 		if (Gamepad.current != null)
