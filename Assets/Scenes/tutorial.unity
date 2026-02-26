@@ -817,6 +817,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 362905873536123964, guid: 8b0876b5b116f2744bf937b63d4503b0, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 362905873536123964, guid: 8b0876b5b116f2744bf937b63d4503b0, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 362905873536123964, guid: 8b0876b5b116f2744bf937b63d4503b0, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5236062273586892200, guid: 8b0876b5b116f2744bf937b63d4503b0, type: 3}
       propertyPath: m_Name
       value: Pressable
