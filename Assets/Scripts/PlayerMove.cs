@@ -195,23 +195,20 @@ public class PlayerMove : MonoBehaviour
 
 	private bool CheckGrounded()
 	{
-		if (col != null)
-		{
-			Bounds b = col.bounds;
-			Vector2 origin = new Vector2(b.center.x, b.min.y - groundCheckOffsetY);
-			Collider2D hit = Physics2D.OverlapBox(origin, groundCheckBoxSize, 0f, groundMask);
-			return hit != null;
-		}
+		if (col == null) return false;
 
-		RaycastHit2D hitRay = Physics2D.Raycast(
-			transform.position,
-			Vector2.down,
-			0.8f,
-			groundMask
-		);
-		return hitRay.collider != null;
+		Bounds b = col.bounds;
+
+		float width = b.size.x * 0.9f;
+		Vector2 size = new Vector2(width, groundCheckBoxSize.y);
+
+		Vector2 origin = new Vector2(b.center.x, b.min.y + 0.02f);
+		float distance = groundCheckOffsetY + 0.05f;
+
+		RaycastHit2D hit = Physics2D.BoxCast(origin, size, 0f, Vector2.down, distance, groundMask);
+
+		return hit.collider != null && hit.normal.y > 0.5f;
 	}
-
 	public void Stop()
 	{
 		moveInputX = 0f;
