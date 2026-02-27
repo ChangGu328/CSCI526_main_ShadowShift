@@ -733,6 +733,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 404443616631899457, guid: de12a56088824134a8954119370f2847, type: 3}
+      propertyPath: hintUI
+      value: 
+      objectReference: {fileID: 5352681}
     - target: {fileID: 6505486436535387545, guid: de12a56088824134a8954119370f2847, type: 3}
       propertyPath: m_Name
       value: Hazard (1)
