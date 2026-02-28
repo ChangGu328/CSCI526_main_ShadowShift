@@ -45,5 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RetryLogger
   firebaseUrl: https://shadowshift-af31e-default-rtdb.firebaseio.com/
-  apiKey: AIzaSyD4__vDAWgLJpRmn-ZYVakzieJvOwKsWeA
+  apiKey: 
   autoListenForR: 1
