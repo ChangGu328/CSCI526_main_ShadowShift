@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 /// <summary>
-/// Physically correct pulley system (Atwood machine).
+/// Physically correct pulley system (Atwood machine) — Optimized for responsiveness.
 /// Both platforms are Kinematic — the script positions them directly each FixedUpdate.
 /// Rope length is conserved: leftSegment + rightSegment = constant.
 /// Acceleration = (m_heavy - m_light) * g / (m_heavy + m_light).
@@ -30,8 +30,14 @@ public class PulleySystemController : MonoBehaviour
     [Range(0f, 5f)]
     [Tooltip("Velocity damping to prevent perpetual oscillation.")]
     public float ropeDamping = 0.3f;
-    [Tooltip("How fast detected mass converges (units/s). Prevents jitter from contact flickering.")]
-    public float massSmoothingSpeed = 15f;
+
+    [Header("Mass Detection")]
+    [Tooltip("Use instant mass detection (no smoothing delay). Recommended for responsive feel.")]
+    public bool instantMassDetection = true;
+    [Tooltip("Only used when instantMassDetection is OFF. Higher = faster convergence.")]
+    public float massSmoothingSpeed = 50f;
+    [Tooltip("Minimum mass difference to start moving. Prevents micro-jitter.")]
+    public float massDeadzone = 0.05f;
 
     [Header("Blocking")]
     [Tooltip("Prevent platforms from moving through static/kinematic colliders.")]
@@ -54,15 +60,13 @@ public class PulleySystemController : MonoBehaviour
     public float debugRightRopeLength;
 
     // State
-    private float ropeVelocity;       // positive = right rope gets longer (right goes down)
+    private float ropeVelocity;
     private float rightRopeLength;
-    private float availableRope;      // totalRopeLength - topSpan
+    private float availableRope;
     private float smoothedLeftMass;
     private float smoothedRightMass;
     private bool initialized;
 
-    // Offset from Rigidbody2D center to the rope attach point (top of collider).
-    // Needed when the collider is on a child object far from the Rigidbody2D.
     private float leftAttachOffsetY;
     private float rightAttachOffsetY;
     private Collider2D[] leftSolidColliders = Array.Empty<Collider2D>();
@@ -86,22 +90,17 @@ public class PulleySystemController : MonoBehaviour
             return;
         }
 
-        // Switch to Kinematic so we drive position directly
         leftPlatform.bodyType = RigidbodyType2D.Kinematic;
         rightPlatform.bodyType = RigidbodyType2D.Kinematic;
         leftPlatform.useFullKinematicContacts = true;
         rightPlatform.useFullKinematicContacts = true;
 
-        // DistanceJoint2D is no longer needed
         DestroyJointIfPresent(leftPlatform);
         DestroyJointIfPresent(rightPlatform);
 
-        // Ensure platform colliders are not triggers (needed for contact detection)
         EnsureNotTrigger(leftPlatform);
         EnsureNotTrigger(rightPlatform);
 
-        // Calculate offset from Rigidbody2D center to the top of the actual
-        // platform collider (the rope attaches to the top, not the RB center).
         leftAttachOffsetY = GetAttachOffsetY(leftPlatform);
         rightAttachOffsetY = GetAttachOffsetY(rightPlatform);
         leftSolidColliders = GetSolidColliders(leftPlatform);
@@ -116,39 +115,62 @@ public class PulleySystemController : MonoBehaviour
         float dt = Time.fixedDeltaTime;
         if (dt <= 0f) return;
 
-        // ── 1. Mass detection with smoothing ──
+        // ── 1. 质量检测 ──
         float rawLeft = platformMass + GetContactMass(leftPlatform);
         float rawRight = platformMass + GetContactMass(rightPlatform);
-        smoothedLeftMass = Mathf.MoveTowards(smoothedLeftMass, rawLeft, massSmoothingSpeed * dt);
-        smoothedRightMass = Mathf.MoveTowards(smoothedRightMass, rawRight, massSmoothingSpeed * dt);
+
+        if (instantMassDetection)
+        {
+            // 直接使用原始质量，无延迟
+            smoothedLeftMass = rawLeft;
+            smoothedRightMass = rawRight;
+        }
+        else
+        {
+            // 平滑过渡（如果你仍然想要平滑效果）
+            smoothedLeftMass = Mathf.MoveTowards(smoothedLeftMass, rawLeft, massSmoothingSpeed * dt);
+            smoothedRightMass = Mathf.MoveTowards(smoothedRightMass, rawRight, massSmoothingSpeed * dt);
+        }
+
         float totalMass = smoothedLeftMass + smoothedRightMass;
 
-        // ── 2. Atwood machine acceleration ──
-        // a = (m_right - m_left) * g / (m_right + m_left)
+        // ── 2. Atwood 加速度 ──
         float accel = 0f;
         if (totalMass > 0.001f)
         {
-            accel = (smoothedRightMass - smoothedLeftMass) * gravity / totalMass;
+            float massDiff = smoothedRightMass - smoothedLeftMass;
+
+            // 死区：质量差太小就不动，防止微抖
+            if (Mathf.Abs(massDiff) < massDeadzone)
+            {
+                massDiff = 0f;
+            }
+
+            accel = massDiff * gravity / totalMass;
         }
 
-        // ── 3. Integrate velocity with damping ──
+        // ── 3. 积分速度 + 阻尼 ──
         ropeVelocity += accel * dt;
         ropeVelocity *= Mathf.Max(0f, 1f - ropeDamping * dt);
 
-        // ── 4. Integrate position ──
+        // 如果加速度为零且速度很小，直接停止（防止无限滑动）
+        if (Mathf.Abs(accel) < 0.001f && Mathf.Abs(ropeVelocity) < 0.01f)
+        {
+            ropeVelocity = 0f;
+        }
+
+        // ── 4. 积分位置 ──
         float desiredDelta = ropeVelocity * dt;
         float newRight = Mathf.Clamp(
             rightRopeLength + desiredDelta,
             minSegmentLength,
             availableRope - minSegmentLength);
 
-        // Ground blocking
         if (enableGroundBlocking)
         {
             newRight = ClampByGround(newRight);
         }
 
-        // If clamped by any limit, kill velocity
         if (Mathf.Abs(newRight - (rightRopeLength + desiredDelta)) > 0.0001f)
         {
             ropeVelocity = 0f;
@@ -157,8 +179,7 @@ public class PulleySystemController : MonoBehaviour
         rightRopeLength = newRight;
         float leftRopeLength = availableRope - rightRopeLength;
 
-        // ── 5. Move platforms (only Y axis — preserve original X) ──
-        // attachY = anchor.y - ropeLength  →  rb.y = attachY - offsetY
+        // ── 5. 移动平台 ──
         leftPlatform.MovePosition(new Vector2(
             leftPlatform.position.x,
             leftAnchor.position.y - leftRopeLength - leftAttachOffsetY));
@@ -180,8 +201,6 @@ public class PulleySystemController : MonoBehaviour
     private void InitializeRope()
     {
         float topSpan = Vector2.Distance(leftAnchor.position, rightAnchor.position);
-        // Rope length is measured from anchor to the TOP of the platform collider,
-        // not to the Rigidbody2D center (which may be far from the actual platform).
         float leftAttachY = leftPlatform.position.y + leftAttachOffsetY;
         float rightAttachY = rightPlatform.position.y + rightAttachOffsetY;
         float currentLeft = Mathf.Abs(leftAnchor.position.y - leftAttachY);
@@ -220,8 +239,6 @@ public class PulleySystemController : MonoBehaviour
             Rigidbody2D rb = col.attachedRigidbody;
             if (rb == null || rb == platform) continue;
             if (rb.bodyType != RigidbodyType2D.Dynamic) continue;
-            // Count only bodies whose center is above the actual top surface of the
-            // platform collider. Using platform.position.y breaks when collider is offset.
             if (rb.position.y <= platformTopY - aboveTopTolerance) continue;
             if (!uniqueBodies.Add(rb)) continue;
 
@@ -235,17 +252,11 @@ public class PulleySystemController : MonoBehaviour
     {
         Collider2D[] source;
         if (platform == leftPlatform)
-        {
             source = leftSolidColliders;
-        }
         else if (platform == rightPlatform)
-        {
             source = rightSolidColliders;
-        }
         else
-        {
             source = GetSolidColliders(platform);
-        }
 
         float top = platform.position.y;
         bool found = false;
@@ -270,24 +281,17 @@ public class PulleySystemController : MonoBehaviour
 
     private float ClampByGround(float proposedRight)
     {
-        // Two passes so either side clamping can propagate through rope constraint.
         float rightLength = proposedRight;
         for (int i = 0; i < 2; i++)
         {
             rightLength = ClampSegmentByCollisions(
-                rightPlatform,
-                rightSolidColliders,
-                rightAnchor,
-                rightAttachOffsetY,
-                rightLength);
+                rightPlatform, rightSolidColliders, rightAnchor,
+                rightAttachOffsetY, rightLength);
 
             float leftLength = availableRope - rightLength;
             leftLength = ClampSegmentByCollisions(
-                leftPlatform,
-                leftSolidColliders,
-                leftAnchor,
-                leftAttachOffsetY,
-                leftLength);
+                leftPlatform, leftSolidColliders, leftAnchor,
+                leftAttachOffsetY, leftLength);
 
             rightLength = availableRope - leftLength;
         }
@@ -296,18 +300,14 @@ public class PulleySystemController : MonoBehaviour
     }
 
     private float ClampSegmentByCollisions(
-        Rigidbody2D platform,
-        Collider2D[] platformColliders,
-        Transform anchor,
-        float attachOffsetY,
-        float proposedLength)
+        Rigidbody2D platform, Collider2D[] platformColliders,
+        Transform anchor, float attachOffsetY, float proposedLength)
     {
         if (platform == null) return proposedLength;
 
         float targetY = anchor.position.y - proposedLength - attachOffsetY;
         float currentY = platform.position.y;
 
-        // Moving down
         if (targetY < currentY)
         {
             float desired = currentY - targetY;
@@ -318,7 +318,6 @@ public class PulleySystemController : MonoBehaviour
                 return anchor.position.y - clampedY - attachOffsetY;
             }
         }
-        // Moving up
         else if (targetY > currentY)
         {
             float desired = targetY - currentY;
@@ -334,10 +333,8 @@ public class PulleySystemController : MonoBehaviour
     }
 
     private float GetMaxTravel(
-        Rigidbody2D platform,
-        Collider2D[] platformColliders,
-        Vector2 direction,
-        float desired)
+        Rigidbody2D platform, Collider2D[] platformColliders,
+        Vector2 direction, float desired)
     {
         if (platform == null || desired <= 0f) return 0f;
         if (platformColliders == null || platformColliders.Length == 0) return desired;
@@ -360,9 +357,7 @@ public class PulleySystemController : MonoBehaviour
                 if (hitCol == null) continue;
 
                 Rigidbody2D hitRb = hitCol.attachedRigidbody;
-                // Skip self and the other platform
                 if (hitRb == platform || hitRb == leftPlatform || hitRb == rightPlatform) continue;
-                // Skip dynamic bodies (boxes, player) — only block on static/kinematic colliders
                 if (hitRb != null && hitRb.bodyType == RigidbodyType2D.Dynamic) continue;
 
                 max = Mathf.Min(max, Mathf.Max(0f, castBuffer[i].distance - 0.01f));
@@ -424,11 +419,6 @@ public class PulleySystemController : MonoBehaviour
         if (joint != null) Destroy(joint);
     }
 
-    /// <summary>
-    /// Returns the Y offset from the Rigidbody2D position to the top of
-    /// the highest non-trigger collider (the rope attachment point).
-    /// Can be negative when the collider is on a child far below the RB.
-    /// </summary>
     private static float GetAttachOffsetY(Rigidbody2D platform)
     {
         if (platform == null) return 0f;
@@ -458,7 +448,6 @@ public class PulleySystemController : MonoBehaviour
         foreach (var col in platform.GetComponentsInChildren<Collider2D>())
         {
             if (col.attachedRigidbody != platform) continue;
-            // Only fix the main platform collider, leave functional triggers alone
             if (col.GetComponent<BoxWeightDetector>() != null) continue;
             if (col.GetComponent<Switch>() != null) continue;
             if (col.isTrigger)
@@ -548,5 +537,4 @@ public class PulleySystemController : MonoBehaviour
 
         return solids.ToArray();
     }
-
 }

@@ -1,9 +1,10 @@
-// RopeVisualOrthogonal.cs  (fix: use pully visual top; enhanced gizmos + ray debug)
+﻿// RopeVisual.cs — Optimized: LateUpdate, cached raycasts, editor preview
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
+[ExecuteAlways] // The rope is visible even in Edit Mode.
 [RequireComponent(typeof(LineRenderer))]
 public class RopeVisual : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class RopeVisual : MonoBehaviour
     public Transform rightAttach;
     public Transform leftAnchor;
     public Transform rightAnchor;
-    public Transform pully;              // optional visual pulley
+    public Transform pully;
 
     [Header("Visual")]
     public float lineWidth = 0.02f;
@@ -27,6 +28,8 @@ public class RopeVisual : MonoBehaviour
     public LayerMask obstacleMask = ~0;
     public float raiseStep = 0.2f;
     public int maxRaiseAttempts = 10;
+    [Tooltip("How often (in frames) to perform obstacle detection (higher values ​​save performance but result in slower response times).")]
+    public int obstacleCheckInterval = 3;
 
     [Header("Pulley Exit")]
     [Tooltip("When set, force the top-right horizontal start to be at the visual right edge of the pulley plus this offset.")]
@@ -42,17 +45,14 @@ public class RopeVisual : MonoBehaviour
     private LineRenderer lr;
     private Vector3[] debugPoints = new Vector3[6];
 
+    // Obstacle Detection Cache
+    private float cachedObstacleTopY = 0f;
+    private int frameCounter = 0;
+    private bool hasCachedValue = false;
+
     void Awake()
     {
-        lr = GetComponent<LineRenderer>();
-        if (lr == null) lr = gameObject.AddComponent<LineRenderer>();
-
-        if (lineMaterial != null) lr.material = lineMaterial;
-
-        lr.useWorldSpace = true;
-        lr.numCapVertices = 0;
-        lr.positionCount = 6;
-        SetLineWidth(lineWidth);
+        InitLineRenderer();
     }
 
     void OnValidate()
@@ -63,6 +63,19 @@ public class RopeVisual : MonoBehaviour
             SetLineWidth(lineWidth);
             lr.positionCount = 6;
         }
+    }
+
+    private void InitLineRenderer()
+    {
+        lr = GetComponent<LineRenderer>();
+        if (lr == null) lr = gameObject.AddComponent<LineRenderer>();
+
+        if (lineMaterial != null) lr.material = lineMaterial;
+
+        lr.useWorldSpace = true;
+        lr.numCapVertices = 0;
+        lr.positionCount = 6;
+        SetLineWidth(lineWidth);
     }
 
     private void SetLineWidth(float w)
@@ -102,34 +115,34 @@ public class RopeVisual : MonoBehaviour
         return 0f;
     }
 
-    void Update()
+    void LateUpdate()
     {
+        // Ensure the LineRenderer is initialized in Edit Mode.
+        if (lr == null) InitLineRenderer();
+
         if (leftAttach == null || rightAttach == null || leftAnchor == null || rightAnchor == null)
             return;
 
-        // compute anchor visual centers
+        // Calculate the Visual Center of the Anchor Point
         Vector3 leftAnchorCenter = GetAnchorWorldCenter(leftAnchor);
         Vector3 rightAnchorCenter = GetAnchorWorldCenter(rightAnchor);
 
-        // Start topY as max anchor center y + offset
         float topY = Mathf.Max(leftAnchorCenter.y, rightAnchorCenter.y) + topOffset;
-        Debug.Log(topY);
-        
-        // If pully exists, ensure topY is at least at the pully's visual TOP edge (not pully.position.y)
+
+        // Pulley Top Constraint
         if (pully != null)
         {
             Vector3 pullyCenter = GetAnchorWorldCenter(pully);
             float pullyHalfHeight = GetRendererHalfHeight(pully);
             float pullyTopY = pullyCenter.y + pullyHalfHeight;
             topY = Mathf.Max(topY, pullyTopY);
-            
         }
 
-        // anchor X positions (visual center X)
+
         float topLeftAnchorX = leftAnchorCenter.x;
         float topRightAnchorX = rightAnchorCenter.x;
 
-        // If we want rope to visibly exit the pully to the right, compute pully right edge
+        // Pulley Exit (Right Side)
         if (pully != null && forceExitOnRight)
         {
             Vector3 pullyCenter = GetAnchorWorldCenter(pully);
@@ -138,56 +151,31 @@ public class RopeVisual : MonoBehaviour
             topRightAnchorX = pullyRightEdgeX;
         }
 
-        // attach top X (vertical from attach meets topY)
         float attachLeftTopX = leftAttach.position.x;
         float attachRightTopX = rightAttach.position.x;
 
-        // obstacle avoidance: check left-sub, main, right-sub horizontal spans
         if (avoidObstacles)
         {
-            int attempts = 0;
-            while (attempts < maxRaiseAttempts)
+            frameCounter++;
+            bool shouldCheck = !hasCachedValue || frameCounter >= obstacleCheckInterval;
+
+            #if UNITY_EDITOR
+            if (!Application.isPlaying) shouldCheck = true;
+            #endif
+
+            if (shouldCheck)
             {
-                bool blocked = false;
-
-                // main top span (anchor center to anchor center)
-                Vector2 mainStart = new Vector2(topLeftAnchorX, topY);
-                Vector2 mainEnd = new Vector2(topRightAnchorX, topY);
-                float mainDist = Vector2.Distance(mainStart, mainEnd);
-                if (mainDist > 0.0001f)
-                {
-                    RaycastHit2D hitMain = Physics2D.Raycast(mainStart, (mainEnd - mainStart).normalized, mainDist, obstacleMask);
-                    if (hitMain.collider != null) blocked = true;
-                }
-
-                // left sub-segment from attachTop to leftAnchorCenter top
-                Vector2 leftSubStart = new Vector2(attachLeftTopX, topY);
-                Vector2 leftSubEnd = new Vector2(topLeftAnchorX, topY);
-                float leftSubDist = Mathf.Abs(leftSubEnd.x - leftSubStart.x);
-                if (!blocked && leftSubDist > 0.0001f)
-                {
-                    RaycastHit2D hitLeft = Physics2D.Raycast(leftSubStart, (leftSubEnd - leftSubStart).normalized, leftSubDist, obstacleMask);
-                    if (hitLeft.collider != null) blocked = true;
-                }
-
-                // right sub-segment from rightAnchorCenter top to attachTop
-                Vector2 rightSubStart = new Vector2(topRightAnchorX, topY);
-                Vector2 rightSubEnd = new Vector2(attachRightTopX, topY);
-                float rightSubDist = Mathf.Abs(rightSubEnd.x - rightSubStart.x);
-                if (!blocked && rightSubDist > 0.0001f)
-                {
-                    RaycastHit2D hitRight = Physics2D.Raycast(rightSubStart, (rightSubEnd - rightSubStart).normalized, rightSubDist, obstacleMask);
-                    if (hitRight.collider != null) blocked = true;
-                }
-
-                if (!blocked) break;
-
-                topY += raiseStep;
-                attempts++;
+                frameCounter = 0;
+                cachedObstacleTopY = ComputeAvoidanceTopY(
+                    topY, topLeftAnchorX, topRightAnchorX,
+                    attachLeftTopX, attachRightTopX
+                );
+                hasCachedValue = true;
             }
+
+            topY = Mathf.Max(topY, cachedObstacleTopY);
         }
-        
-        // Build 6 points using anchor visual centers for the top horizontal between anchors.
+
         float topZ = (leftAnchorCenter.z + rightAnchorCenter.z) * 0.5f;
 
         Vector3 p0 = leftAttach.position;
@@ -210,26 +198,79 @@ public class RopeVisual : MonoBehaviour
         }
     }
 
+    /// <summary>
+
+    /// </summary>
+    private float ComputeAvoidanceTopY(
+        float baseTopY, float leftAnchorX, float rightAnchorX,
+        float leftAttachX, float rightAttachX)
+    {
+        float topY = baseTopY;
+        int attempts = 0;
+
+        while (attempts < maxRaiseAttempts)
+        {
+            bool blocked = false;
+
+            Vector2 mainStart = new Vector2(leftAnchorX, topY);
+            Vector2 mainEnd = new Vector2(rightAnchorX, topY);
+            float mainDist = Vector2.Distance(mainStart, mainEnd);
+            if (mainDist > 0.0001f)
+            {
+                RaycastHit2D hit = Physics2D.Raycast(mainStart, (mainEnd - mainStart).normalized, mainDist, obstacleMask);
+                if (hit.collider != null) blocked = true;
+            }
+
+            if (!blocked)
+            {
+                float leftSubDist = Mathf.Abs(leftAnchorX - leftAttachX);
+                if (leftSubDist > 0.0001f)
+                {
+                    Vector2 start = new Vector2(leftAttachX, topY);
+                    Vector2 end = new Vector2(leftAnchorX, topY);
+                    RaycastHit2D hit = Physics2D.Raycast(start, (end - start).normalized, leftSubDist, obstacleMask);
+                    if (hit.collider != null) blocked = true;
+                }
+            }
+
+            if (!blocked)
+            {
+                float rightSubDist = Mathf.Abs(rightAttachX - rightAnchorX);
+                if (rightSubDist > 0.0001f)
+                {
+                    Vector2 start = new Vector2(rightAnchorX, topY);
+                    Vector2 end = new Vector2(rightAttachX, topY);
+                    RaycastHit2D hit = Physics2D.Raycast(start, (end - start).normalized, rightSubDist, obstacleMask);
+                    if (hit.collider != null) blocked = true;
+                }
+            }
+
+            if (!blocked) break;
+
+            topY += raiseStep;
+            attempts++;
+        }
+
+        return topY;
+    }
+
     void OnDrawGizmos()
     {
         if (!debugDrawPoints) return;
         if (debugPoints == null || debugPoints.Length != 6) return;
 
-        // Draw the 6 points
         Gizmos.color = Color.red;
         for (int i = 0; i < debugPoints.Length; i++)
         {
             Gizmos.DrawSphere(debugPoints[i], debugPointSize);
         }
 
-        // Connect them
         Gizmos.color = Color.yellow;
         for (int i = 0; i < debugPoints.Length - 1; i++)
         {
             Gizmos.DrawLine(debugPoints[i], debugPoints[i + 1]);
         }
 
-        // Draw labels P0..P5 in Editor
 #if UNITY_EDITOR
         for (int i = 0; i < debugPoints.Length; i++)
         {
@@ -237,7 +278,6 @@ public class RopeVisual : MonoBehaviour
         }
 #endif
 
-        // Draw pulley reference lines: center and top edge
         if (debugDrawPulleyRefs && pully != null)
         {
             Vector3 pullyCenter = GetAnchorWorldCenter(pully);
@@ -250,7 +290,6 @@ public class RopeVisual : MonoBehaviour
             Gizmos.DrawWireSphere(pullyCenter, debugPointSize * 0.6f);
             Gizmos.DrawLine(pullyCenter, topEdge);
             Gizmos.DrawLine(pullyCenter, rightEdge);
-            // mark top and right edge small spheres
             Gizmos.DrawSphere(topEdge, debugPointSize * 0.4f);
             Gizmos.DrawSphere(rightEdge, debugPointSize * 0.4f);
 
@@ -260,24 +299,15 @@ public class RopeVisual : MonoBehaviour
 #endif
         }
 
-        // Optionally draw the raycast lines that were tested (approx)
         if (debugDrawRaycasts)
         {
             Gizmos.color = Color.magenta;
-            // main horizontal
             Gizmos.DrawLine(debugPoints[2], debugPoints[3]);
-            // left sub
-            Gizmos.DrawLine(new Vector3(debugPoints[1].x, debugPoints[1].y, debugPoints[1].z),
-                            new Vector3(debugPoints[2].x, debugPoints[2].y, debugPoints[2].z));
-            // right sub
-            Gizmos.DrawLine(new Vector3(debugPoints[3].x, debugPoints[3].y, debugPoints[3].z),
-                            new Vector3(debugPoints[4].x, debugPoints[4].y, debugPoints[4].z));
+            Gizmos.DrawLine(debugPoints[1], debugPoints[2]);
+            Gizmos.DrawLine(debugPoints[3], debugPoints[4]);
         }
     }
 
-    /// <summary>
-    /// Runtime API to change width.
-    /// </summary>
     public void SetWidth(float w)
     {
         lineWidth = w;
