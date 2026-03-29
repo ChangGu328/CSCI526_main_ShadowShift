@@ -9,7 +9,7 @@ public class DoorOpen : MonoBehaviour
 
     private void Start()
     {
-        // Automatically retrieves the triggers on this object for use as door area detectors.器作为门区域检测
+        // Automatically retrieves the triggers on this object for use as door area detectors.
         doorZone = GetComponent<Collider2D>();
     }
 

@@ -115,32 +115,32 @@ public class PulleySystemController : MonoBehaviour
         float dt = Time.fixedDeltaTime;
         if (dt <= 0f) return;
 
-        // ── 1. 质量检测 ──
+        //  Mass Detection 
         float rawLeft = platformMass + GetContactMass(leftPlatform);
         float rawRight = platformMass + GetContactMass(rightPlatform);
 
         if (instantMassDetection)
         {
-            // 直接使用原始质量，无延迟
+            // No smoothing, direct assignment. This makes the system more responsive but can be jittery if mass changes rapidly.
             smoothedLeftMass = rawLeft;
             smoothedRightMass = rawRight;
         }
         else
         {
-            // 平滑过渡（如果你仍然想要平滑效果）
+            // Exponential moving average for mass smoothing. Higher massSmoothingSpeed = faster response.
             smoothedLeftMass = Mathf.MoveTowards(smoothedLeftMass, rawLeft, massSmoothingSpeed * dt);
             smoothedRightMass = Mathf.MoveTowards(smoothedRightMass, rawRight, massSmoothingSpeed * dt);
         }
 
         float totalMass = smoothedLeftMass + smoothedRightMass;
 
-        // ── 2. Atwood 加速度 ──
+        //  Acceleration Calculation
         float accel = 0f;
         if (totalMass > 0.001f)
         {
             float massDiff = smoothedRightMass - smoothedLeftMass;
 
-            // 死区：质量差太小就不动，防止微抖
+            // Apply deadzone to prevent jitter when masses are nearly equal.
             if (Mathf.Abs(massDiff) < massDeadzone)
             {
                 massDiff = 0f;
@@ -149,17 +149,17 @@ public class PulleySystemController : MonoBehaviour
             accel = massDiff * gravity / totalMass;
         }
 
-        // ── 3. 积分速度 + 阻尼 ──
+        //  Rope Velocity Update
         ropeVelocity += accel * dt;
         ropeVelocity *= Mathf.Max(0f, 1f - ropeDamping * dt);
 
-        // 如果加速度为零且速度很小，直接停止（防止无限滑动）
+        // Stop the rope if it's moving very slowly to prevent perpetual micro-movements.
         if (Mathf.Abs(accel) < 0.001f && Mathf.Abs(ropeVelocity) < 0.01f)
         {
             ropeVelocity = 0f;
         }
 
-        // ── 4. 积分位置 ──
+        // Rope Length Update with Ground Blocking
         float desiredDelta = ropeVelocity * dt;
         float newRight = Mathf.Clamp(
             rightRopeLength + desiredDelta,
@@ -179,7 +179,7 @@ public class PulleySystemController : MonoBehaviour
         rightRopeLength = newRight;
         float leftRopeLength = availableRope - rightRopeLength;
 
-        // ── 5. 移动平台 ──
+        // Apply Positions
         leftPlatform.MovePosition(new Vector2(
             leftPlatform.position.x,
             leftAnchor.position.y - leftRopeLength - leftAttachOffsetY));
@@ -187,7 +187,7 @@ public class PulleySystemController : MonoBehaviour
             rightPlatform.position.x,
             rightAnchor.position.y - rightRopeLength - rightAttachOffsetY));
 
-        // ── Debug ──
+        // Debug
         debugLeftTotalMass = smoothedLeftMass;
         debugRightTotalMass = smoothedRightMass;
         debugAcceleration = accel;
@@ -196,7 +196,7 @@ public class PulleySystemController : MonoBehaviour
         debugRightRopeLength = rightRopeLength;
     }
 
-    // ─────────────────── Initialization ───────────────────
+    //Initialization
 
     private void InitializeRope()
     {
@@ -219,7 +219,7 @@ public class PulleySystemController : MonoBehaviour
         initialized = true;
     }
 
-    // ─────────────────── Mass Detection ───────────────────
+    //Mass Detection
 
     private float GetContactMass(Rigidbody2D platform)
     {
@@ -277,7 +277,7 @@ public class PulleySystemController : MonoBehaviour
         return top;
     }
 
-    // ─────────────────── Ground Blocking ───────────────────
+    // Ground Blocking
 
     private float ClampByGround(float proposedRight)
     {
@@ -367,7 +367,7 @@ public class PulleySystemController : MonoBehaviour
         return max;
     }
 
-    // ─────────────────── Auto Wiring ───────────────────
+    // Auto Wiring
 
     private void TryResolveReferences()
     {
@@ -398,7 +398,7 @@ public class PulleySystemController : MonoBehaviour
         }
     }
 
-    // ─────────────────── Utilities ───────────────────
+    // Utility Methods
 
     private static Transform FindChildRecursive(Transform root, string targetName)
     {

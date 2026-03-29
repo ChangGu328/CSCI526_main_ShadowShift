@@ -7,9 +7,9 @@ public class Door : MonoBehaviour
     public GameObject rightDoor;
 
     [Header("Push Settings")]
-    [Tooltip("把玩家推出门的力度")]
+    [Tooltip("The horizontal force applied to the player when they are pushed out of the door area.")]
     public float pushForce = 12f;
-    [Tooltip("推出时额外给一点向上的力，防止卡地面")]
+    [Tooltip("The vertical force applied to the player when they are pushed out of the door area.")]
     public float pushUpForce = 3f;
 
     // Buffer Gate Region
@@ -31,7 +31,7 @@ public class Door : MonoBehaviour
     {
         if (sw.isOn)
         {
-            // Turn on switch → Open door
+            // Turn on switch Open door
             if (!doorsOpen)
             {
                 leftDoor.SetActive(false);
@@ -48,14 +48,14 @@ public class Door : MonoBehaviour
                 // Detect whether the player is inside the door.
                 if (IsPlayerInDoorArea())
                 {
-                    // Player is inside the door → Push the player; the door remains open.
+                    // Player is inside the door  Push the player; the door remains open.
                     PushPlayerOut();
                     waitingForPlayerToLeave = true;
                     // Do not close the door; wait until the next frame to check again.
                 }
                 else
                 {
-                    // The player is not inside the door (or has already been pushed out) → Close the door.
+                    // The player is not inside the door (or has already been pushed out) Close the door.
                     leftDoor.SetActive(true);
                     rightDoor.SetActive(true);
                     doorsOpen = false;

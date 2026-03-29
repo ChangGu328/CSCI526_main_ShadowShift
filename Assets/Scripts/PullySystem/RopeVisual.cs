@@ -198,9 +198,6 @@ public class RopeVisual : MonoBehaviour
         }
     }
 
-    /// <summary>
-
-    /// </summary>
     private float ComputeAvoidanceTopY(
         float baseTopY, float leftAnchorX, float rightAnchorX,
         float leftAttachX, float rightAttachX)
