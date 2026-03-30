@@ -829,8 +829,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.068337664, y: 0.23300001}
   m_AnchorMax: {x: 0.068337664, y: 0.23300001}
-  m_AnchoredPosition: {x: -1, y: -0.6999512}
-  m_SizeDelta: {x: 111.3345, y: 45.5667}
+  m_AnchoredPosition: {x: 208, y: 38}
+  m_SizeDelta: {x: 200, y: 45.5667}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &440472166
 MonoBehaviour:
@@ -891,8 +891,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1613,6 +1613,52 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 171d1031675224e80a5f7d77b9743527, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Portal
+--- !u!1 &818925809
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 818925811}
+  - component: {fileID: 818925810}
+  m_Layer: 0
+  m_Name: TriggerZone_Reset
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &818925810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818925809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30c7ccdbb41ed834a8e46bcccc3a7d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProximityTextTrigger
+  targetText: {fileID: 440472167}
+  triggerRadius: 1
+--- !u!4 &818925811
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818925809}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.4, y: -3.71, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &886671878
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1670,6 +1716,52 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84fb72d51b0144dd7b8d794599f82065, type: 3}
+--- !u!1 &898953696
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 898953698}
+  - component: {fileID: 898953697}
+  m_Layer: 0
+  m_Name: TriggerZone_Switch
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &898953697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898953696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30c7ccdbb41ed834a8e46bcccc3a7d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProximityTextTrigger
+  targetText: {fileID: 1690892180}
+  triggerRadius: 2
+--- !u!4 &898953698
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 898953696}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.22, y: -4.06, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &939078900
 GameObject:
   m_ObjectHideFlags: 0
@@ -1727,7 +1819,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Entity will remain there when you switch out the shadow.
+  m_text: <color=yellow>Entity stays</color> when switching to Shadow
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2247,7 +2339,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8696341454686017129, guid: de12a56088824134a8954119370f2847, type: 3}
       propertyPath: m_LocalScale.x
-      value: 4.0010905
+      value: 2.6507225
       objectReference: {fileID: 0}
     - target: {fileID: 8696341454686017129, guid: de12a56088824134a8954119370f2847, type: 3}
       propertyPath: m_LocalScale.y
@@ -2333,7 +2425,7 @@ RectTransform:
   m_AnchorMin: {x: 0.33541036, y: 0.32836542}
   m_AnchorMax: {x: 0.33541036, y: 0.32836542}
   m_AnchoredPosition: {x: -3, y: 6}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1690892180
 MonoBehaviour:
@@ -2355,8 +2447,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Entity form will die when touching the harzard. \nUse Q to switch to shadow
-    form"
+  m_text: "Entity dies on hazard!\r\nPress Q \u2192 switch to Shadow"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2383,8 +2474,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2436,6 +2527,52 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1690892178}
   m_CullTransparentMesh: 1
+--- !u!1 &1709732859
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1709732861}
+  - component: {fileID: 1709732860}
+  m_Layer: 0
+  m_Name: TriggerZone_Controls
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1709732860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1709732859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30c7ccdbb41ed834a8e46bcccc3a7d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProximityTextTrigger
+  targetText: {fileID: 1903671415}
+  triggerRadius: 1
+--- !u!4 &1709732861
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1709732859}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7.75, y: -3.777, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1801187334
 GameObject:
   m_ObjectHideFlags: 0
@@ -2470,7 +2607,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.8308799, y: 0.28100002}
   m_AnchorMax: {x: 0.8308799, y: 0.28100002}
-  m_AnchoredPosition: {x: 43.820007, y: -2.999817}
+  m_AnchoredPosition: {x: 43.82007, y: -2.999817}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1801187336
@@ -2587,7 +2724,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4396514783510546919, guid: d63028028df014208bb8c1a1c3e54799, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.18
+      value: -7.734
       objectReference: {fileID: 0}
     - target: {fileID: 4396514783510546919, guid: d63028028df014208bb8c1a1c3e54799, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2652,7 +2789,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4291650324395427886, guid: 22b9fd61a227a5e4f8bac3de46f02d71, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.1498
+      value: -5.66
       objectReference: {fileID: 0}
     - target: {fileID: 4291650324395427886, guid: 22b9fd61a227a5e4f8bac3de46f02d71, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2880,11 +3017,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1419038012}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.06625433, y: 0.16375642}
-  m_AnchorMax: {x: 0.06625433, y: 0.16375642}
-  m_AnchoredPosition: {x: 3, y: 1}
-  m_SizeDelta: {x: 111.3345, y: 45.5667}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 36, y: 223}
+  m_SizeDelta: {x: 111.33447, y: 45.56671}
+  m_Pivot: {x: 0, y: 0}
 --- !u!114 &1903671415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2905,7 +3042,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "use W/A/D \nto move"
+  m_text: "Use W/A/D \nto move"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2932,8 +3069,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3062,6 +3199,52 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f905be532b281324886ad193e63c9b6f, type: 3}
+--- !u!1 &2020281661
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2020281663}
+  - component: {fileID: 2020281662}
+  m_Layer: 0
+  m_Name: TriggerZone_Dooropen
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2020281662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2020281661}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30c7ccdbb41ed834a8e46bcccc3a7d6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProximityTextTrigger
+  targetText: {fileID: 2058131698}
+  triggerRadius: 1
+--- !u!4 &2020281663
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2020281661}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.11, y: -4.21, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2058131696
 GameObject:
   m_ObjectHideFlags: 0
@@ -3096,8 +3279,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.51500005, y: 0.3}
   m_AnchorMax: {x: 0.51500005, y: 0.3}
-  m_AnchoredPosition: {x: 0.5, y: 3}
-  m_SizeDelta: {x: 201, y: 50}
+  m_AnchoredPosition: {x: 0.5, y: 67}
+  m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2058131698
 MonoBehaviour:
@@ -3119,10 +3302,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Only Entity can trigger the pressable.
-
-    Use Q to switch back to entity
-    form.'
+  m_text: "Only Entity triggers buttons\r\nPress Q \u2192 back to Entity"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3149,8 +3329,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3316,3 +3496,7 @@ SceneRoots:
   - {fileID: 886671878}
   - {fileID: 341574992}
   - {fileID: 1141011756}
+  - {fileID: 1709732861}
+  - {fileID: 818925811}
+  - {fileID: 898953698}
+  - {fileID: 2020281663}
