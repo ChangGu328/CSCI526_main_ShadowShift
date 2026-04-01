@@ -16,6 +16,7 @@ public class Terminal : MonoBehaviour
     {
         ResolveGameOverLabel();
     }
+    public bool IsGameOver => isGameOver;
 
     private void Update()
     {
