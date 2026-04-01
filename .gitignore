@@ -81,3 +81,7 @@ crashlytics-build.properties
 # Unity recovery artifacts
 /[Aa]ssets/_Recovery/
 /[Aa]ssets/_Recovery.meta
+
+# Local secrets for analytics scripts
+/FirebaseAnalyticsSecrets.json
+/RetryLoggerSecrets.json

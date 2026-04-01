@@ -7,6 +7,7 @@ public class Terminal : MonoBehaviour
     public GameObject gameOverUI; // Reference to the Game Over UI panel
 
     private bool isGameOver; // if The Game is over;
+    public bool IsGameOver => isGameOver;
 
     private void Update()
     {
@@ -35,4 +36,3 @@ public class Terminal : MonoBehaviour
         }
     }
 }
-
