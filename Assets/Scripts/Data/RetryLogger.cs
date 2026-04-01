@@ -12,9 +12,6 @@ public class RetryLogger : MonoBehaviour
     [Tooltip("Realtime Database base URL, e.g. https://your-project-id-default-rtdb.firebaseio.com/")]
     public string firebaseUrl = "https://your-project-id-default-rtdb.firebaseio.com/";
 
-    [Tooltip("Web API Key (from Firebase Project Settings → Web API Key)")]
-    public string apiKey = "";
-
     [Header("Runtime Settings")]
     [Tooltip("Listen for R key via new Input System (set false if not using Input System)")]
     public bool autoListenForR = true;
@@ -29,6 +26,7 @@ public class RetryLogger : MonoBehaviour
     public static RetryLogger Instance { get; private set; }
 
     // runtime auth state
+    private string apiKey;
     private string uid; // localId
     private string idToken;
     private string refreshToken;
@@ -90,12 +88,24 @@ public class RetryLogger : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
 
+        if (FirebaseAnalyticsConfig.TryLoad(firebaseUrl, out FirebaseAnalyticsConfig.RuntimeConfig config, nameof(RetryLogger)))
+        {
+            firebaseUrl = config.FirebaseUrl;
+            apiKey = config.ApiKey;
+        }
+
         CreateNewSessionId();
         LoadStoredAuth();
     }
 
     private void Start()
     {
+        if (string.IsNullOrEmpty(apiKey))
+        {
+            Debug.LogWarning("[RetryLogger] Firebase Web API Key not configured; retry analytics disabled.");
+            return;
+        }
+
         // Try refresh if refreshToken exists; otherwise sign up anonymously
         if (!string.IsNullOrEmpty(refreshToken))
         {
@@ -182,6 +192,12 @@ public class RetryLogger : MonoBehaviour
             return;
         }
 
+        if (string.IsNullOrEmpty(apiKey))
+        {
+            Debug.LogWarning("[RetryLogger] Firebase Web API Key not configured; retry event skipped.");
+            return;
+        }
+
         var evt = new RetryEvent(levelId);
         retryQueue.Enqueue(evt);
         Debug.Log($"[RetryLogger] Enqueued retry for level {levelId} ts={evt.timestamp} (queue size {retryQueue.Count})");
@@ -226,7 +242,6 @@ public class RetryLogger : MonoBehaviour
 
         Debug.Log($"[RetryLogger] Saved auth uid={uid} tokenExp={tokenExpiryMs}");
     }
-    
     // Force create a new anonymous session (new sessionId and new anonymous account).
     // Call if you want a fresh user instead of reusing stored anonymous account.
     public void StartNewSession()
@@ -244,7 +259,7 @@ public class RetryLogger : MonoBehaviour
     {
         if (string.IsNullOrEmpty(apiKey))
         {
-            Debug.LogError("[RetryLogger] apiKey not set in Inspector.");
+            Debug.LogError("[RetryLogger] Firebase Web API Key not configured.");
             yield break;
         }
 
@@ -294,7 +309,7 @@ public class RetryLogger : MonoBehaviour
     {
         if (string.IsNullOrEmpty(apiKey))
         {
-            Debug.LogError("[RetryLogger] apiKey not set in Inspector.");
+            Debug.LogError("[RetryLogger] Firebase Web API Key not configured.");
             onComplete?.Invoke(false);
             yield break;
         }
