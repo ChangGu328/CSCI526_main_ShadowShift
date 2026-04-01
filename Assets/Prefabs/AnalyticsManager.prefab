@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1746187993085154578}
   - component: {fileID: 6437223979186909575}
+  - component: {fileID: 7318442191183775123}
   m_Layer: 0
   m_Name: AnalyticsManager
   m_TagString: Untagged
@@ -46,3 +47,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RetryLogger
   firebaseUrl: https://shadowshift-af31e-default-rtdb.firebaseio.com/
   autoListenForR: 1
+--- !u!114 &7318442191183775123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7664490367782604728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5aa1b39cc9645e59939e0738cf89897, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SwitchStateLogger
+  firebaseUrl: https://shadowshift-af31e-default-rtdb.firebaseio.com/
+  autoListenForQ: 1
