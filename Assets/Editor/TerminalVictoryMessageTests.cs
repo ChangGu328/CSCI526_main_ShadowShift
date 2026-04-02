@@ -1,4 +1,6 @@
+using System.Reflection;
 using NUnit.Framework;
+using UnityEngine;
 
 public class TerminalVictoryMessageTests
 {
@@ -39,5 +41,43 @@ public class TerminalVictoryMessageTests
 
         StringAssert.Contains("Stars collected: 3/3", message);
         StringAssert.Contains("All stars collected", message);
+    }
+}
+
+public class TerminalCompatibilityTests
+{
+    [Test]
+    public void Terminal_ExposesIsGameOverCompatibilityProperty()
+    {
+        PropertyInfo property = typeof(Terminal).GetProperty("IsGameOver");
+
+        Assert.NotNull(property);
+        Assert.AreEqual(typeof(bool), property.PropertyType);
+    }
+
+    [Test]
+    public void IsGameOver_MirrorsIsFinishedState()
+    {
+        GameObject gameObject = new GameObject("TerminalCompatibilityTests");
+
+        try
+        {
+            Terminal terminal = gameObject.AddComponent<Terminal>();
+            FieldInfo finishedBackingField = typeof(Terminal).GetField("<IsFinished>k__BackingField", BindingFlags.Instance | BindingFlags.NonPublic);
+            PropertyInfo isGameOverProperty = typeof(Terminal).GetProperty("IsGameOver");
+
+            Assert.NotNull(finishedBackingField);
+            Assert.NotNull(isGameOverProperty);
+
+            finishedBackingField.SetValue(terminal, true);
+            Assert.AreEqual(true, (bool)isGameOverProperty.GetValue(terminal));
+
+            finishedBackingField.SetValue(terminal, false);
+            Assert.AreEqual(false, (bool)isGameOverProperty.GetValue(terminal));
+        }
+        finally
+        {
+            Object.DestroyImmediate(gameObject);
+        }
     }
 }

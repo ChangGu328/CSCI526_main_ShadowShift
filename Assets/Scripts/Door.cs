@@ -18,7 +18,6 @@ public class Door : MonoBehaviour
     private bool boundsInitialized = false;
 
     private bool doorsOpen = false;
-    private bool waitingForPlayerToLeave = false;
 
     void Start()
     {
@@ -37,7 +36,6 @@ public class Door : MonoBehaviour
                 leftDoor.SetActive(false);
                 rightDoor.SetActive(false);
                 doorsOpen = true;
-                waitingForPlayerToLeave = false;
             }
         }
         else
@@ -50,7 +48,6 @@ public class Door : MonoBehaviour
                 {
                     // Player is inside the door  Push the player; the door remains open.
                     PushPlayerOut();
-                    waitingForPlayerToLeave = true;
                     // Do not close the door; wait until the next frame to check again.
                 }
                 else
@@ -59,7 +56,6 @@ public class Door : MonoBehaviour
                     leftDoor.SetActive(true);
                     rightDoor.SetActive(true);
                     doorsOpen = false;
-                    waitingForPlayerToLeave = false;
                 }
             }
         }

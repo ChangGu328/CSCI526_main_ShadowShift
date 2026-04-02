@@ -17,7 +17,7 @@ public class CollectibleManager : MonoBehaviour
         {
             if (_instance == null && !applicationQuitting)
             {
-                _instance = FindObjectOfType<CollectibleManager>();
+                _instance = FindFirstObjectByType<CollectibleManager>();
 
                 if (_instance == null)
                 {

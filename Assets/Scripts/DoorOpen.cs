@@ -49,9 +49,8 @@ public class DoorOpen : MonoBehaviour
         if (doorZone == null) return false;
 
         Collider2D[] results = new Collider2D[8];
-        ContactFilter2D filter = new ContactFilter2D();
+        ContactFilter2D filter = ContactFilter2D.noFilter;
         filter.useTriggers = true;
-        filter.NoFilter();
 
         int count = doorZone.Overlap(filter, results);
         for (int i = 0; i < count; i++)

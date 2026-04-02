@@ -14,6 +14,7 @@ public class Terminal : MonoBehaviour
 
     public float Timer { get; private set; }
     public bool IsFinished { get; private set; }
+    public bool IsGameOver => IsFinished;
 
     private void Start()
     {
