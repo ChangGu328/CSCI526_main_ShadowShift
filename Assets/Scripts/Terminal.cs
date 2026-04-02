@@ -1,83 +1,71 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class Terminal : MonoBehaviour
 {
-    public GameObject gameOverUI; // Reference to the Game Over UI panel
-    public bool showCollectibleSummary;
-    public bool collectiblesAreOptional = true;
+    [Header("UI Panels")]
+    public GameObject winPanel;
+    public GameObject[] starImages;
 
-    private bool isGameOver; // if The Game is over;
-    private Text gameOverLabel;
+    [Header("Level Settings")]
+    public float targetTime = 60f;
+    public string nextLevelName;
 
-    private void Awake()
+    public float Timer { get; private set; }
+    public bool IsFinished { get; private set; }
+
+    private void Start()
     {
-        ResolveGameOverLabel();
+        Timer = 0f;
+        IsFinished = false;
+        winPanel.SetActive(false);
     }
-    public bool IsGameOver => isGameOver;
 
     private void Update()
     {
-        if (!isGameOver) return;
-
-        // todo: All stars have been collected.
-        if (CollectibleManager.IsInitialized && CollectibleManager.Instance.IsAllCollected())
-            Debug.Log("Game over with All Collectible Collected");
-        
-        // press L to enter level choice menu
-        if (Keyboard.current.lKey.wasPressedThisFrame)
+        if (!IsFinished)
         {
-            Time.timeScale = 1f; // recover time
-            SceneManager.LoadScene("LevelSelect");
+            Timer += Time.deltaTime;
         }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // Trigger Game Over when the player's body enters the terminal
-        if (collision.gameObject.layer == LayerMask.NameToLayer("Player_Body"))
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player_Body") && !IsFinished)
         {
-            UpdateVictoryText();
-            Time.timeScale = 0; // Pause the game
-            gameOverUI.SetActive(true); // Show the Game Over UI
-            isGameOver = true; // Set the Game Over
+            FinishLevel();
         }
     }
 
-    public string BuildVictoryMessage(int collectedCount, int totalCount)
-    {
-        return TerminalVictoryMessageFormatter.Build(
-            showCollectibleSummary,
-            collectiblesAreOptional,
-            collectedCount,
-            totalCount);
-    }
+    public Sprite starOn;
+    public Sprite starOff;
 
-    private void UpdateVictoryText()
+    private void FinishLevel()
     {
-        Text label = ResolveGameOverLabel();
-        if (label == null) return;
+        IsFinished = true;
+        Time.timeScale = 0;
 
-        int collectedCount = 0;
-        int totalCount = 0;
-        if (CollectibleManager.IsInitialized)
+        int starsEarned = CalculateStars();
+        winPanel.SetActive(true);
+
+        for (int i = 0; i < starImages.Length; i++)
         {
-            collectedCount = CollectibleManager.Instance.CollectedCount;
-            totalCount = CollectibleManager.Instance.TotalCount;
+            Image img = starImages[i].GetComponent<Image>();
+            img.sprite = (i < starsEarned) ? starOn : starOff;
         }
-
-        label.text = BuildVictoryMessage(collectedCount, totalCount);
     }
 
-    private Text ResolveGameOverLabel()
+    private int CalculateStars()
     {
-        if (gameOverLabel == null && gameOverUI != null)
-        {
-            gameOverLabel = gameOverUI.GetComponent<Text>();
-        }
-
-        return gameOverLabel;
+        int stars = 0;
+        stars++; 
+        if (Timer <= targetTime) stars++; 
+        if (CollectibleManager.Instance.IsAllCollected()) stars++;
+        return stars;
     }
+
+    public void OnNextLevel() { Time.timeScale = 1f; SceneManager.LoadScene(nextLevelName); }
+    public void OnLevelSelect() { Time.timeScale = 1f; SceneManager.LoadScene("LevelSelect"); }
+    public void OnMainMenu() { Time.timeScale = 1f; SceneManager.LoadScene("MainMenu"); }
 }
