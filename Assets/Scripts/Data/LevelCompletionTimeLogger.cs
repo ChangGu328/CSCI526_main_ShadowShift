@@ -201,7 +201,7 @@ public class LevelCompletionTimeLogger : MonoBehaviour
 
     private void RefreshTrackedTerminals()
     {
-        trackedTerminals = FindObjectsOfType<Terminal>(true);
+        trackedTerminals = FindObjectsByType<Terminal>(FindObjectsInactive.Include, FindObjectsSortMode.None);
     }
 
     private void TryDetectLevelCompletion()
@@ -223,7 +223,7 @@ public class LevelCompletionTimeLogger : MonoBehaviour
         for (int i = 0; i < trackedTerminals.Length; i++)
         {
             Terminal terminal = trackedTerminals[i];
-            if (terminal == null || !terminal.IsGameOver)
+            if (terminal == null || !terminal.IsFinished)
             {
                 continue;
             }
