@@ -8,6 +8,9 @@ public class LevelSelectController : MonoBehaviour
     [Tooltip("Scene name for Tutorial")]
     [SerializeField] private string tutorialScene = "tutorial";
 
+    [Tooltip("Scene name for Tutorial2")]
+    [SerializeField] private string tutorial2Scene = "tutorial2";
+
     [Tooltip("Scene name for Level 1")]
     [SerializeField] private string level1Scene = "level1";
 
@@ -32,6 +35,18 @@ public class LevelSelectController : MonoBehaviour
 
         Debug.Log($"Loading Tutorial -> {tutorialScene}");
         SceneManager.LoadScene(tutorialScene);
+    }
+
+    public void OnTTL2Button()
+    {
+        if (string.IsNullOrEmpty(tutorial2Scene))
+        {
+            Debug.LogError("LevelSelectController: tutorial2Scene is empty.");
+            return;
+        }
+
+        Debug.Log($"Loading Tutorial -> {tutorial2Scene}");
+        SceneManager.LoadScene(tutorial2Scene);
     }
 
     public void OnLevel1Button()
