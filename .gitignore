@@ -85,3 +85,5 @@ crashlytics-build.properties
 # Local secrets for analytics scripts
 /FirebaseAnalyticsSecrets.json
 /RetryLoggerSecrets.json
+/Assets/Resources/FirebaseAnalyticsPublicConfig.json
+/Assets/Resources/FirebaseAnalyticsPublicConfig.json.meta

@@ -7,6 +7,7 @@ public static class FirebaseAnalyticsConfig
     public const string DefaultApiKeyEnvironmentVariable = "SHADOWSHIFT_FIREBASE_API_KEY";
     public const string DefaultSecretsFileName = "FirebaseAnalyticsSecrets.json";
     private const string LegacySecretsFileName = "RetryLoggerSecrets.json";
+    private const string WebGlResourcesConfigPath = "FirebaseAnalyticsPublicConfig";
     private static bool hasLoadedSecrets;
     private static string cachedApiKey;
     private static string cachedFirebaseUrl;
@@ -52,6 +53,22 @@ public static class FirebaseAnalyticsConfig
 
         hasLoadedSecrets = true;
 
+#if UNITY_WEBGL && !UNITY_EDITOR
+        if (TryLoadResourcesConfig(out SecretsFile webGlConfig))
+        {
+            if (!string.IsNullOrWhiteSpace(webGlConfig.firebaseApiKey))
+            {
+                Debug.Log($"[{logPrefix}] Loaded API key from Resources/{WebGlResourcesConfigPath}.");
+                cachedApiKey = webGlConfig.firebaseApiKey.Trim();
+                cachedFirebaseUrl = string.IsNullOrWhiteSpace(webGlConfig.firebaseUrl) ? null : webGlConfig.firebaseUrl.Trim();
+                return;
+            }
+
+            Debug.LogError($"[{logPrefix}] Resources/{WebGlResourcesConfigPath} is missing 'firebaseApiKey'.");
+            return;
+        }
+#endif
+
         string envApiKey = Environment.GetEnvironmentVariable(DefaultApiKeyEnvironmentVariable);
         if (!string.IsNullOrWhiteSpace(envApiKey))
         {
@@ -78,6 +95,26 @@ public static class FirebaseAnalyticsConfig
             $"[{logPrefix}] Firebase Web API Key not found. Set environment variable '{DefaultApiKeyEnvironmentVariable}' " +
             $"or create '{GetProjectSecretsPath(DefaultSecretsFileName)}' / '{GetPersistentSecretsPath(DefaultSecretsFileName)}'."
         );
+    }
+
+    private static bool TryLoadResourcesConfig(out SecretsFile secrets)
+    {
+        secrets = null;
+
+        TextAsset textAsset = Resources.Load<TextAsset>(WebGlResourcesConfigPath);
+        if (textAsset == null || string.IsNullOrWhiteSpace(textAsset.text))
+            return false;
+
+        try
+        {
+            secrets = JsonUtility.FromJson<SecretsFile>(textAsset.text);
+            return secrets != null;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[FirebaseAnalytics] Failed to parse Resources/{WebGlResourcesConfigPath}: {e}");
+            return false;
+        }
     }
 
     private static bool TryLoadSecretsFile(out SecretsFile secrets, out string pathUsed)
