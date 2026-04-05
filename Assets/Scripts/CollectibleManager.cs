@@ -49,6 +49,21 @@ public class CollectibleManager : MonoBehaviour
     public int TotalCount => registered.Count;
     public int CollectedCount => collectedSet.Count;
 
+    private void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+            return;
+        }
+
+        if (_instance != this)
+        {
+            Debug.LogWarning("Duplicate CollectibleManager found. Destroying the newer instance.");
+            Destroy(gameObject);
+        }
+    }
+
     private void OnApplicationQuit()
     {
         applicationQuitting = true;

@@ -17,11 +17,14 @@ public class HUDManager : MonoBehaviour
     [Header("References")]
     public Terminal levelTerminal;
 
+    private CollectibleManager collectibleManager;
+
     private void Start()
     {
-        if (CollectibleManager.IsInitialized)
+        collectibleManager = CollectibleManager.Instance;
+        if (collectibleManager != null)
         {
-            CollectibleManager.Instance.OnCollected.AddListener(UpdateStarUI);
+            collectibleManager.OnCollected.AddListener(UpdateStarUI);
             UpdateStarUI(null, null);
         }
 
@@ -52,9 +55,17 @@ public class HUDManager : MonoBehaviour
 
     private void UpdateStarUI(Collectible c, GameObject g)
     {
-        if (CollectibleManager.IsInitialized && starCountText != null)
+        if (collectibleManager != null && starCountText != null)
         {
-            starCountText.text = $"{CollectibleManager.Instance.CollectedCount} / {CollectibleManager.Instance.TotalCount}";
+            starCountText.text = $"{collectibleManager.CollectedCount} / {collectibleManager.TotalCount}";
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (collectibleManager != null)
+        {
+            collectibleManager.OnCollected.RemoveListener(UpdateStarUI);
         }
     }
 

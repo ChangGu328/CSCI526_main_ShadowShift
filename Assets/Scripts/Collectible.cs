@@ -4,15 +4,18 @@ using UnityEngine.Events;
 [RequireComponent(typeof(Collider2D))]
 public class Collectible : MonoBehaviour
 {
-    
+
+    private void Awake()
+    {
+        // Register before any Start methods run so HUD can read the final total reliably.
+        CollectibleManager.Instance?.RegisterCollectible(this);
+    }
+
     private void Start()
     {
         Collider2D col = GetComponent<Collider2D>();
         if (col != null)
             col.isTrigger = true;
-        
-        // Register to manager
-        CollectibleManager.Instance?.RegisterCollectible(this);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
