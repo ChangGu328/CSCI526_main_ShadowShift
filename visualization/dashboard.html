@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShadowShift Metrics</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #081019;
+    --surface: rgba(14, 19, 30, 0.95);
+    --surface-2: rgba(20, 27, 40, 0.95);
+    --border: rgba(145, 170, 216, 0.16);
+    --text: #f4f7ff;
+    --muted: #95a2be;
+    --accent: #75d2ff;
+    --accent-2: #ffc56c;
+    --danger: #ff9797;
+    --ok: #8df7b0;
+    --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    min-height: 100vh;
+    font-family: "Syne", sans-serif;
+    color: var(--text);
+    background:
+      radial-gradient(circle at top left, rgba(117, 210, 255, 0.14), transparent 26%),
+      radial-gradient(circle at top right, rgba(255, 197, 108, 0.12), transparent 24%),
+      linear-gradient(180deg, #05070c 0%, #09131f 100%);
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 34px 34px;
+    mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 0.4));
+  }
+
+  .shell {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 28px 24px 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 18px;
+  }
+
+  .brand h1 {
+    font-size: 28px;
+    line-height: 1;
+    letter-spacing: -0.6px;
+  }
+
+  .brand p {
+    margin-top: 8px;
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    font-family: "Space Mono", monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .status::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    box-shadow: 0 0 0 6px rgba(255, 197, 108, 0.12);
+  }
+
+  .status.ok::before {
+    background: var(--ok);
+    box-shadow: 0 0 0 6px rgba(141, 247, 176, 0.12);
+  }
+
+  .status.error::before {
+    background: var(--danger);
+    box-shadow: 0 0 0 6px rgba(255, 151, 151, 0.12);
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .metric-card {
+    min-height: 420px;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .metric-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  .metric-title {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .metric-subtitle {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .metric-badge {
+    padding: 7px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.03);
+    font-family: "Space Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 1.1px;
+    text-transform: uppercase;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .chart-slot {
+    flex: 1;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.01)),
+      rgba(6, 10, 18, 0.88);
+    padding: 16px;
+    overflow: auto;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 14px;
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .legend-violin {
+    width: 18px;
+    height: 12px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgba(117, 210, 255, 0.18), rgba(117, 210, 255, 0.7), rgba(117, 210, 255, 0.18));
+    border: 1px solid rgba(117, 210, 255, 0.55);
+  }
+
+  .legend-line {
+    width: 18px;
+    height: 0;
+    border-top: 3px solid var(--accent-2);
+  }
+
+  .legend-cross {
+    position: relative;
+    width: 16px;
+    height: 16px;
+  }
+
+  .legend-cross::before,
+  .legend-cross::after {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 1px;
+    width: 2px;
+    height: 14px;
+    background: #ff9b9b;
+    transform-origin: center;
+  }
+
+  .legend-cross::before {
+    transform: rotate(45deg);
+  }
+
+  .legend-cross::after {
+    transform: rotate(-45deg);
+  }
+
+  .legend-bar-stars,
+  .legend-bar-no-stars {
+    width: 16px;
+    height: 12px;
+    border-radius: 4px 4px 0 0;
+  }
+
+  .legend-bar-stars {
+    background: rgba(117, 210, 255, 0.82);
+    border: 1px solid rgba(117, 210, 255, 0.95);
+  }
+
+  .legend-bar-no-stars {
+    background: rgba(255, 197, 108, 0.8);
+    border: 1px solid rgba(255, 197, 108, 0.95);
+  }
+
+  .metric-note {
+    margin-top: 12px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--muted);
+  }
+
+  .metric-stack {
+    display: grid;
+    gap: 14px;
+  }
+
+  .metric-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .level-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .level-button {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+
+  .level-button:hover {
+    border-color: rgba(117, 210, 255, 0.45);
+    color: var(--text);
+    transform: translateY(-1px);
+  }
+
+  .level-button.active {
+    background: rgba(117, 210, 255, 0.14);
+    border-color: rgba(117, 210, 255, 0.58);
+    color: var(--text);
+    box-shadow: inset 0 0 0 1px rgba(117, 210, 255, 0.16);
+  }
+
+  .heatmap-hint {
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .heatmap-stage {
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01)),
+      rgba(5, 9, 18, 0.86);
+    padding: 12px;
+    overflow: auto;
+  }
+
+  .heatmap-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-family: "Space Mono", monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .heatmap-summary span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .heatmap-chart {
+    display: block;
+    width: 100%;
+    min-width: 560px;
+    height: auto;
+  }
+
+  .heatmap-chart .axis-line {
+    stroke: rgba(255, 255, 255, 0.18);
+    stroke-width: 1.2;
+  }
+
+  .heatmap-chart .grid-line {
+    stroke: rgba(255, 255, 255, 0.07);
+    stroke-width: 1;
+  }
+
+  .heatmap-chart .tick-label,
+  .heatmap-chart .axis-title {
+    fill: var(--muted);
+    font-family: "Space Mono", monospace;
+  }
+
+  .heatmap-chart .tick-label {
+    font-size: 11px;
+  }
+
+  .heatmap-chart .axis-title {
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .heatmap-chart .cell-empty {
+    fill: rgba(255, 255, 255, 0.03);
+  }
+
+  .bar-chart {
+    display: block;
+    width: 100%;
+    min-width: 560px;
+    height: auto;
+  }
+
+  .bar-chart .axis-line {
+    stroke: rgba(255, 255, 255, 0.18);
+    stroke-width: 1.2;
+  }
+
+  .bar-chart .grid-line {
+    stroke: rgba(255, 255, 255, 0.07);
+    stroke-width: 1;
+  }
+
+  .bar-chart .tick-label,
+  .bar-chart .axis-title,
+  .bar-chart .value-label {
+    fill: var(--muted);
+    font-family: "Space Mono", monospace;
+  }
+
+  .bar-chart .tick-label,
+  .bar-chart .value-label {
+    font-size: 11px;
+  }
+
+  .bar-chart .axis-title {
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .bar-chart .bar-with-stars {
+    fill: rgba(117, 210, 255, 0.82);
+    stroke: rgba(117, 210, 255, 0.96);
+    stroke-width: 1.2;
+  }
+
+  .bar-chart .bar-without-stars {
+    fill: rgba(255, 197, 108, 0.8);
+    stroke: rgba(255, 197, 108, 0.96);
+    stroke-width: 1.2;
+  }
+
+  .metric-empty,
+  .metric-placeholder {
+    min-height: 320px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 24px;
+    color: var(--muted);
+    line-height: 1.7;
+    background:
+      linear-gradient(180deg, rgba(117, 210, 255, 0.05), rgba(255, 255, 255, 0.02)),
+      rgba(255, 255, 255, 0.02);
+  }
+
+  .metric-placeholder {
+    border: 1px dashed rgba(117, 210, 255, 0.28);
+  }
+
+  .placeholder-inner {
+    max-width: 280px;
+  }
+
+  .placeholder-inner strong {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: var(--text);
+  }
+
+  .violin-chart {
+    display: block;
+    width: 100%;
+    min-width: 560px;
+    height: auto;
+  }
+
+  .violin-chart .grid-line {
+    stroke: rgba(255, 255, 255, 0.08);
+    stroke-width: 1;
+  }
+
+  .violin-chart .axis-line {
+    stroke: rgba(255, 255, 255, 0.18);
+    stroke-width: 1.2;
+  }
+
+  .violin-chart .tick-label,
+  .violin-chart .axis-title,
+  .violin-chart .point-label {
+    fill: var(--muted);
+    font-family: "Space Mono", monospace;
+  }
+
+  .violin-chart .tick-label,
+  .violin-chart .point-label {
+    font-size: 11px;
+  }
+
+  .violin-chart .axis-title {
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .violin-chart .target-line {
+    stroke: rgba(255, 155, 155, 0.2);
+    stroke-width: 1;
+    stroke-dasharray: 6 6;
+  }
+
+  .violin-chart .median-line {
+    stroke: var(--accent-2);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+
+  .violin-chart .violin-body {
+    fill: rgba(117, 210, 255, 0.28);
+    stroke: rgba(117, 210, 255, 0.88);
+    stroke-width: 1.5;
+  }
+
+  .violin-chart .target-cross {
+    stroke: #ff9b9b;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+  }
+
+  @media (max-width: 980px) {
+    .metrics-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .shell {
+      padding: 18px 14px 28px;
+    }
+
+    .topbar,
+    .metric-head {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .metric-card {
+      min-height: 360px;
+      padding: 18px;
+      border-radius: 18px;
+    }
+
+    .chart-slot {
+      padding: 12px;
+    }
+
+    .metric-toolbar {
+      align-items: flex-start;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <h1>ShadowShift Metrics</h1>
+      </div>
+      <div id="status" class="status">Connecting to Firebase</div>
+    </header>
+
+    <main class="metrics-grid">
+      <section class="metric-card">
+        <div class="metric-head">
+          <div>
+            <div class="metric-title">Metric 1 | Completion Time</div>
+            <div class="metric-subtitle">Violin plot across Level 1 to Level 3 with a median line and a 60-second target marker.</div>
+          </div>
+          <div class="metric-badge">Metric 1</div>
+        </div>
+        <div id="metric-1" class="chart-slot">
+          <div class="metric-placeholder">
+            <div class="placeholder-inner">
+              <strong>Loading Metric 1</strong>
+              Completion-time data is being fetched from Firebase.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="metric-card">
+        <div class="metric-head">
+          <div>
+            <div class="metric-title">Metric 2 | Death & Retry Frequency</div>
+            <div class="metric-subtitle">Switch between Level 1 to Level 3 heatmaps. X-axis is x position and Y-axis is y position.</div>
+          </div>
+          <div class="metric-badge">Metric 2</div>
+        </div>
+        <div id="metric-2" class="chart-slot">
+          <div class="metric-placeholder">
+            <div class="placeholder-inner">
+              <strong>Loading Metric 2</strong>
+              Heatmap data is being fetched from Firebase.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="metric-card">
+        <div class="metric-head">
+          <div>
+            <div class="metric-title">Metric 3 | Shadow State Switch Count</div>
+            <div class="metric-subtitle">Switch between Level 1 to Level 3 heatmaps. X-axis is x position and Y-axis is y position.</div>
+          </div>
+          <div class="metric-badge">Metric 3</div>
+        </div>
+        <div id="metric-3" class="chart-slot">
+          <div class="metric-placeholder">
+            <div class="placeholder-inner">
+              <strong>Loading Metric 3</strong>
+              Shadow-switch data is being fetched from Firebase.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="metric-card">
+        <div class="metric-head">
+          <div>
+            <div class="metric-title">Metric 4 | Average Detour Time for Star Collection</div>
+            <div class="metric-subtitle">Grouped bar chart comparing completion time with stars and without stars across Level 1 to Level 3.</div>
+          </div>
+          <div class="metric-badge">Metric 4</div>
+        </div>
+        <div id="metric-4" class="chart-slot">
+          <div class="metric-placeholder">
+            <div class="placeholder-inner">
+              <strong>Loading Metric 4</strong>
+              Star-collection detour data is being fetched from Firebase.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      authDomain: "shadowshift-af31e.firebaseapp.com",
+      databaseURL: "https://shadowshift-af31e-default-rtdb.firebaseio.com",
+      projectId: "shadowshift-af31e",
+      storageBucket: "shadowshift-af31e.firebasestorage.app",
+      messagingSenderId: "1083674663460",
+      appId: "1:1083674663460:web:1e3d926d0754ac59cc96b1",
+      measurementId: "G-66W53Y91HK"
+    };
+
+    const DEFAULT_DATABASE_PATH = "analytics";
+    const COMPLETION_TARGET_SECONDS = 60;
+    const COMPLETION_LEVELS = [
+      { key: "level1", label: "Level 1", target: COMPLETION_TARGET_SECONDS },
+      { key: "level2", label: "Level 2", target: COMPLETION_TARGET_SECONDS },
+      { key: "level3", label: "Level 3", target: COMPLETION_TARGET_SECONDS }
+    ];
+
+    const queryPath = new URLSearchParams(window.location.search).get("path");
+    const databasePath = (queryPath && queryPath.trim()) || DEFAULT_DATABASE_PATH;
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const elements = {
+      status: document.getElementById("status"),
+      metric1: document.getElementById("metric-1"),
+      metric2: document.getElementById("metric-2"),
+      metric3: document.getElementById("metric-3"),
+      metric4: document.getElementById("metric-4")
+    };
+
+    const metric2State = {
+      activeLevelKey: COMPLETION_LEVELS[0].key,
+      series: []
+    };
+
+    const metric3State = {
+      activeLevelKey: COMPLETION_LEVELS[0].key,
+      series: []
+    };
+
+    function setStatus(message, variant = "") {
+      elements.status.textContent = message;
+      elements.status.className = `status ${variant}`.trim();
+    }
+
+    function renderReservedMetric(element, metricNumber, description) {
+      element.innerHTML = `
+        <div class="metric-placeholder">
+          <div class="placeholder-inner">
+            <strong>Metric ${metricNumber}</strong>
+            ${description}
+          </div>
+        </div>
+      `;
+    }
+
+    function isPositiveNumber(value) {
+      return Number.isFinite(value) && value > 0;
+    }
+
+    function toPositiveNumber(value) {
+      const numericValue = typeof value === "string" ? Number(value) : value;
+      return isPositiveNumber(numericValue) ? numericValue : null;
+    }
+
+    function toFiniteNumber(value) {
+      const numericValue = typeof value === "string" ? Number(value) : value;
+      return Number.isFinite(numericValue) ? numericValue : null;
+    }
+
+    function extractSeconds(record) {
+      if (!record || typeof record !== "object") {
+        return null;
+      }
+
+      const secondCandidates = [
+        record.elapsedSeconds,
+        record.completionTimeSeconds,
+        record.durationSeconds,
+        record.timeSeconds,
+        record.seconds
+      ].map(toPositiveNumber).filter(Boolean);
+
+      if (secondCandidates.length) {
+        return secondCandidates[0];
+      }
+
+      const millisecondCandidates = [
+        record.elapsedMs,
+        record.completionTimeMs,
+        record.durationMs,
+        record.timeMs
+      ].map(toPositiveNumber).filter(Boolean);
+
+      if (millisecondCandidates.length) {
+        return millisecondCandidates[0] / 1000;
+      }
+
+      return null;
+    }
+
+    function collectCompletionSamples(node) {
+      if (!node || typeof node !== "object") {
+        return [];
+      }
+
+      if (node.events && typeof node.events === "object") {
+        const eventSamples = Object.values(node.events)
+          .map(extractSeconds)
+          .filter(isPositiveNumber);
+        const directSample = extractSeconds(node);
+        const combinedSamples = directSample ? [...eventSamples, directSample] : eventSamples;
+
+        return combinedSamples.length ? [Math.max(...combinedSamples)] : [];
+      }
+
+      if (!Array.isArray(node)) {
+        const directSample = extractSeconds(node);
+        const childValues = Object.values(node);
+        const hasNestedObjects = childValues.some(value => value && typeof value === "object");
+
+        if (directSample && !hasNestedObjects) {
+          return [directSample];
+        }
+      }
+
+      return Object.values(node).flatMap(child => collectCompletionSamples(child));
+    }
+
+    function resolveCompletionLevelsNode(data) {
+      const candidates = [
+        data?.["completion-times"]?.["all-collected"],
+        data?.["completion-times"],
+        data?.["all-collected"],
+        data
+      ];
+
+      return findLevelNode(candidates);
+    }
+
+    function findLevelNode(candidates) {
+      return candidates.find(candidate =>
+        candidate &&
+        typeof candidate === "object" &&
+        COMPLETION_LEVELS.some(level => level.key in candidate)
+      ) || null;
+    }
+
+    function mean(values) {
+      return values.reduce((sum, value) => sum + value, 0) / values.length;
+    }
+
+    function median(values) {
+      const sorted = [...values].sort((a, b) => a - b);
+      const middleIndex = Math.floor(sorted.length / 2);
+
+      return sorted.length % 2 === 0
+        ? (sorted[middleIndex - 1] + sorted[middleIndex]) / 2
+        : sorted[middleIndex];
+    }
+
+    function percentile(values, ratio) {
+      const sorted = [...values].sort((a, b) => a - b);
+      const index = (sorted.length - 1) * ratio;
+      const lowerIndex = Math.floor(index);
+      const upperIndex = Math.ceil(index);
+
+      if (lowerIndex === upperIndex) {
+        return sorted[lowerIndex];
+      }
+
+      const weight = index - lowerIndex;
+      return sorted[lowerIndex] * (1 - weight) + sorted[upperIndex] * weight;
+    }
+
+    function standardDeviation(values) {
+      if (values.length < 2) {
+        return 0;
+      }
+
+      const avg = mean(values);
+      const variance = mean(values.map(value => (value - avg) ** 2));
+      return Math.sqrt(variance);
+    }
+
+    function bandwidth(values) {
+      if (values.length < 2) {
+        return 6;
+      }
+
+      const deviation = standardDeviation(values);
+      const iqr = percentile(values, 0.75) - percentile(values, 0.25);
+      const spread = Math.min(
+        deviation || Number.POSITIVE_INFINITY,
+        iqr > 0 ? iqr / 1.34 : Number.POSITIVE_INFINITY
+      );
+      const stableSpread = Number.isFinite(spread) ? spread : deviation || 8;
+
+      return Math.max(4, 0.9 * stableSpread * (values.length ** (-1 / 5)));
+    }
+
+    function gaussianKernel(value) {
+      return Math.exp(-0.5 * value * value) / Math.sqrt(2 * Math.PI);
+    }
+
+    function densityAt(yValue, values, smoothing) {
+      const total = values.reduce((sum, value) => sum + gaussianKernel((yValue - value) / smoothing), 0);
+      return total / (values.length * smoothing);
+    }
+
+    function buildViolinPath(points, centerX) {
+      const leftSide = points.slice().reverse().map(point => `${(centerX - point.width).toFixed(2)} ${point.y.toFixed(2)}`);
+      const rightSide = points.map(point => `${(centerX + point.width).toFixed(2)} ${point.y.toFixed(2)}`);
+
+      return `M ${leftSide[0]} L ${leftSide.slice(1).join(" L ")} L ${rightSide.join(" L ")} Z`;
+    }
+
+    function buildCompletionTimeSvg(series) {
+      const width = 760;
+      const height = 420;
+      const margin = { top: 26, right: 28, bottom: 64, left: 68 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      const allValues = series.flatMap(level => level.values);
+      const yMaxSource = Math.max(
+        COMPLETION_TARGET_SECONDS,
+        ...allValues,
+        ...series.map(level => level.median),
+        ...series.map(level => level.mean)
+      );
+      const yMax = Math.max(80, Math.ceil((yMaxSource * 1.15) / 10) * 10);
+      const yScale = value => margin.top + plotHeight - (value / yMax) * plotHeight;
+      const halfBand = plotWidth / (series.length * 3.2);
+      const violinSteps = 72;
+      const ticks = 6;
+
+      const densitySeries = series.map(level => {
+        if (!level.values.length) {
+          return { ...level, smoothing: 0, points: [] };
+        }
+
+        const smoothing = bandwidth(level.values);
+        const points = Array.from({ length: violinSteps + 1 }, (_, index) => {
+          const seconds = (index / violinSteps) * yMax;
+          return {
+            seconds,
+            density: densityAt(seconds, level.values, smoothing)
+          };
+        });
+
+        return { ...level, smoothing, points };
+      });
+
+      const maxDensity = Math.max(
+        ...densitySeries.flatMap(level => level.points.map(point => point.density)),
+        0.0001
+      );
+
+      const violins = densitySeries.map((level, index) => {
+        const centerX = margin.left + ((index + 0.5) / series.length) * plotWidth;
+        const targetY = yScale(level.target);
+        const crossSize = 8;
+        const sharedMarkup = `
+          <line class="target-cross" x1="${(centerX - crossSize).toFixed(2)}" y1="${(targetY - crossSize).toFixed(2)}" x2="${(centerX + crossSize).toFixed(2)}" y2="${(targetY + crossSize).toFixed(2)}"></line>
+          <line class="target-cross" x1="${(centerX - crossSize).toFixed(2)}" y1="${(targetY + crossSize).toFixed(2)}" x2="${(centerX + crossSize).toFixed(2)}" y2="${(targetY - crossSize).toFixed(2)}"></line>
+          <text class="point-label" x="${centerX.toFixed(2)}" y="${(margin.top + plotHeight + 28).toFixed(2)}" text-anchor="middle">${level.label}</text>
+          <text class="point-label" x="${centerX.toFixed(2)}" y="${(margin.top + 14).toFixed(2)}" text-anchor="middle">n=${level.values.length}</text>
+        `;
+
+        if (!level.values.length) {
+          return `
+            ${sharedMarkup}
+            <text class="point-label" x="${centerX.toFixed(2)}" y="${(margin.top + plotHeight / 2).toFixed(2)}" text-anchor="middle">No data</text>
+          `;
+        }
+
+        const points = level.points.map(point => ({
+          y: yScale(point.seconds),
+          width: Math.max(1.5, (point.density / maxDensity) * halfBand)
+        }));
+        const path = buildViolinPath(points, centerX);
+        const medianY = yScale(level.median);
+        const medianWidth = Math.max(12, (densityAt(level.median, level.values, level.smoothing) / maxDensity) * halfBand);
+
+        return `
+          <path class="violin-body" d="${path}"></path>
+          <line class="median-line" x1="${(centerX - medianWidth).toFixed(2)}" y1="${medianY.toFixed(2)}" x2="${(centerX + medianWidth).toFixed(2)}" y2="${medianY.toFixed(2)}"></line>
+          ${sharedMarkup}
+        `;
+      }).join("");
+
+      const yTicks = Array.from({ length: ticks + 1 }, (_, index) => {
+        const value = (yMax / ticks) * index;
+        const y = yScale(value);
+
+        return `
+          <line class="grid-line" x1="${margin.left}" y1="${y.toFixed(2)}" x2="${(width - margin.right).toFixed(2)}" y2="${y.toFixed(2)}"></line>
+          <text class="tick-label" x="${(margin.left - 12).toFixed(2)}" y="${(y + 4).toFixed(2)}" text-anchor="end">${Math.round(value)}s</text>
+        `;
+      }).join("");
+
+      const targetY = yScale(COMPLETION_TARGET_SECONDS);
+
+      return `
+        <svg class="violin-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="Completion time violin plot for Level 1 to Level 3">
+          <line class="axis-line" x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${(height - margin.bottom).toFixed(2)}"></line>
+          <line class="axis-line" x1="${margin.left}" y1="${(height - margin.bottom).toFixed(2)}" x2="${(width - margin.right).toFixed(2)}" y2="${(height - margin.bottom).toFixed(2)}"></line>
+          <line class="target-line" x1="${margin.left}" y1="${targetY.toFixed(2)}" x2="${(width - margin.right).toFixed(2)}" y2="${targetY.toFixed(2)}"></line>
+          ${yTicks}
+          ${violins}
+          <text class="axis-title" x="${(margin.left - 48).toFixed(2)}" y="${(margin.top - 6).toFixed(2)}">Time (s)</text>
+          <text class="axis-title" x="${(width / 2).toFixed(2)}" y="${(height - 18).toFixed(2)}" text-anchor="middle">Levels</text>
+          <text class="tick-label" x="${(width - margin.right).toFixed(2)}" y="${(targetY - 10).toFixed(2)}" text-anchor="end">Target 60s</text>
+        </svg>
+      `;
+    }
+
+    function renderMetric1Empty(message) {
+      elements.metric1.innerHTML = `
+        <div class="metric-empty">${message}</div>
+      `;
+    }
+
+    function renderMetric2Empty(message) {
+      elements.metric2.innerHTML = `
+        <div class="metric-empty">${message}</div>
+      `;
+    }
+
+    function renderMetric3Empty(message) {
+      elements.metric3.innerHTML = `
+        <div class="metric-empty">${message}</div>
+      `;
+    }
+
+    function renderMetric4Empty(message) {
+      elements.metric4.innerHTML = `
+        <div class="metric-empty">${message}</div>
+      `;
+    }
+
+    function renderCompletionTimeMetric(data) {
+      const completionLevelsNode = resolveCompletionLevelsNode(data);
+
+      if (!completionLevelsNode) {
+        renderMetric1Empty("Completion-time data was not found. Expected a node like completion-times / all-collected / level1-3 under the selected Firebase path.");
+        return;
+      }
+
+      const series = COMPLETION_LEVELS.map(level => {
+        const values = collectCompletionSamples(completionLevelsNode[level.key])
+          .filter(isPositiveNumber)
+          .sort((a, b) => a - b);
+
+        return {
+          ...level,
+          values,
+          median: values.length ? median(values) : 0,
+          mean: values.length ? mean(values) : 0
+        };
+      });
+
+      if (!series.some(level => level.values.length)) {
+        renderMetric1Empty("Completion-time nodes were found, but there are no valid session durations yet. Check whether elapsedMs or elapsedSeconds is being written to Firebase.");
+        return;
+      }
+
+      elements.metric1.innerHTML = `
+        <div class="legend">
+          <div class="legend-item"><span class="legend-violin"></span><span>Completion-time distribution</span></div>
+          <div class="legend-item"><span class="legend-line"></span><span>Median</span></div>
+          <div class="legend-item"><span class="legend-cross"></span><span>Target completion time (60s)</span></div>
+        </div>
+        ${buildCompletionTimeSvg(series)}
+        <p class="metric-note">
+          Each violin shows the session completion-time distribution for one level. The horizontal line marks the median, and the X marks the target completion time.
+        </p>
+      `;
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function formatCoordinate(value) {
+      if (!Number.isFinite(value)) {
+        return "-";
+      }
+
+      const absoluteValue = Math.abs(value);
+      if (absoluteValue >= 100 || Number.isInteger(value)) {
+        return value.toFixed(0);
+      }
+
+      return value.toFixed(1);
+    }
+
+    function interpolateColor(start, end, ratio) {
+      return {
+        r: Math.round(start.r + (end.r - start.r) * ratio),
+        g: Math.round(start.g + (end.g - start.g) * ratio),
+        b: Math.round(start.b + (end.b - start.b) * ratio)
+      };
+    }
+
+    function heatColor(value, maxValue) {
+      if (!maxValue || value <= 0) {
+        return "rgba(255, 255, 255, 0.03)";
+      }
+
+      const intensity = Math.sqrt(value / maxValue);
+      const low = { r: 18, g: 28, b: 42 };
+      const mid = { r: 117, g: 210, b: 255 };
+      const high = { r: 255, g: 197, b: 108 };
+      const segmentRatio = intensity < 0.65 ? intensity / 0.65 : (intensity - 0.65) / 0.35;
+      const mixed = intensity < 0.65
+        ? interpolateColor(low, mid, segmentRatio)
+        : interpolateColor(mid, high, segmentRatio);
+      const alpha = 0.18 + intensity * 0.74;
+
+      return `rgba(${mixed.r}, ${mixed.g}, ${mixed.b}, ${alpha.toFixed(3)})`;
+    }
+
+    function extractCoordinatePair(record) {
+      if (!record || typeof record !== "object") {
+        return null;
+      }
+
+      const pairCandidates = [
+        [record.x, record.y],
+        [record.posX, record.posY],
+        [record.positionX, record.positionY],
+        [record.worldX, record.worldY],
+        [record.playerX, record.playerY],
+        [record.coordX, record.coordY],
+        [record.tileX, record.tileY],
+        [record.location?.x, record.location?.y],
+        [record.position?.x, record.position?.y],
+        [record.coordinates?.x, record.coordinates?.y],
+        [Array.isArray(record.position) ? record.position[0] : null, Array.isArray(record.position) ? record.position[1] : null],
+        [Array.isArray(record.coords) ? record.coords[0] : null, Array.isArray(record.coords) ? record.coords[1] : null],
+        [Array.isArray(record.coordinates) ? record.coordinates[0] : null, Array.isArray(record.coordinates) ? record.coordinates[1] : null]
+      ];
+
+      for (const [rawX, rawY] of pairCandidates) {
+        const x = toFiniteNumber(rawX);
+        const y = toFiniteNumber(rawY);
+
+        if (x !== null && y !== null) {
+          return { x, y };
+        }
+      }
+
+      return null;
+    }
+
+    function collectPositionSamples(node) {
+      if (!node || typeof node !== "object") {
+        return [];
+      }
+
+      const points = [];
+      const directPoint = extractCoordinatePair(node);
+
+      if (directPoint) {
+        points.push(directPoint);
+      }
+
+      if (node.events && typeof node.events === "object") {
+        points.push(...Object.values(node.events).flatMap(event => collectPositionSamples(event)));
+      }
+
+      Object.entries(node).forEach(([key, value]) => {
+        if (
+          key === "events" ||
+          key === "position" ||
+          key === "location" ||
+          key === "coordinates" ||
+          key === "coords" ||
+          !value ||
+          typeof value !== "object"
+        ) {
+          return;
+        }
+
+        points.push(...collectPositionSamples(value));
+      });
+
+      return points;
+    }
+
+    function resolveMetric2Series(data) {
+      const retryCandidates = [
+        { node: data?.["death-retry-frequency"], label: "death / retry" },
+        { node: data?.["deaths-and-retries"], label: "death / retry" },
+        { node: data?.["death-retries"], label: "death / retry" },
+        { node: data?.["retry-frequency"], label: "retry" },
+        { node: data?.retries, label: "retry" },
+        { node: data, label: "current path" }
+      ];
+
+      const deathCandidates = [
+        { node: data?.["death-frequency"], label: "death" },
+        { node: data?.deaths, label: "death" },
+        { node: data?.["death-events"], label: "death" }
+      ];
+
+      return COMPLETION_LEVELS.map(level => {
+        const levelSources = [...retryCandidates, ...deathCandidates]
+          .map(source => {
+            if (!source.node || typeof source.node !== "object" || !(level.key in source.node)) {
+              return null;
+            }
+
+            return {
+              label: source.label,
+              node: source.node[level.key]
+            };
+          })
+          .filter(Boolean);
+
+        const points = levelSources.flatMap(source => collectPositionSamples(source.node));
+        const sourceLabels = [...new Set(levelSources.map(source => source.label))];
+
+        return {
+          ...level,
+          points,
+          sourceLabels
+        };
+      });
+    }
+
+    function resolveMetric3Series(data) {
+      const switchCandidates = [
+        { node: data?.["shadow-state-switch-count"], label: "shadow switch" },
+        { node: data?.["shadow-state-switches"], label: "shadow switch" },
+        { node: data?.["shadow-switches"], label: "shadow switch" },
+        { node: data?.["switch-count"], label: "switch" },
+        { node: data?.switches, label: "switch" },
+        { node: data, label: "current path" }
+      ];
+
+      return COMPLETION_LEVELS.map(level => {
+        const levelSources = switchCandidates
+          .map(source => {
+            if (!source.node || typeof source.node !== "object" || !(level.key in source.node)) {
+              return null;
+            }
+
+            return {
+              label: source.label,
+              node: source.node[level.key]
+            };
+          })
+          .filter(Boolean);
+
+        const points = levelSources.flatMap(source => collectPositionSamples(source.node));
+        const sourceLabels = [...new Set(levelSources.map(source => source.label))];
+
+        return {
+          ...level,
+          points,
+          sourceLabels
+        };
+      });
+    }
+
+    function buildHeatmapSvg(levelSeries) {
+      const width = 640;
+      const height = 390;
+      const margin = { top: 22, right: 26, bottom: 58, left: 64 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      const columns = 18;
+      const rows = 12;
+      const xValues = levelSeries.points.map(point => point.x);
+      const yValues = levelSeries.points.map(point => point.y);
+      const rawXMin = Math.min(...xValues);
+      const rawXMax = Math.max(...xValues);
+      const rawYMin = Math.min(...yValues);
+      const rawYMax = Math.max(...yValues);
+      const xPadding = Math.max(1, (rawXMax - rawXMin) * 0.05 || 1);
+      const yPadding = Math.max(1, (rawYMax - rawYMin) * 0.05 || 1);
+      const xMin = rawXMin - xPadding;
+      const xMax = rawXMax + xPadding;
+      const yMin = rawYMin - yPadding;
+      const yMax = rawYMax + yPadding;
+      const xRange = Math.max(1, xMax - xMin);
+      const yRange = Math.max(1, yMax - yMin);
+      const cellWidth = plotWidth / columns;
+      const cellHeight = plotHeight / rows;
+      const bins = Array.from({ length: rows }, () => Array(columns).fill(0));
+
+      levelSeries.points.forEach(point => {
+        const normalizedX = clamp((point.x - xMin) / xRange, 0, 0.999999);
+        const normalizedY = clamp((point.y - yMin) / yRange, 0, 0.999999);
+        const columnIndex = Math.min(columns - 1, Math.floor(normalizedX * columns));
+        const rowFromBottom = Math.min(rows - 1, Math.floor(normalizedY * rows));
+        const rowIndex = rows - 1 - rowFromBottom;
+
+        bins[rowIndex][columnIndex] += 1;
+      });
+
+      const maxCellCount = Math.max(...bins.flat(), 0);
+      const cells = bins.map((row, rowIndex) => row.map((count, columnIndex) => {
+        const x = margin.left + columnIndex * cellWidth;
+        const y = margin.top + rowIndex * cellHeight;
+        const fill = count ? heatColor(count, maxCellCount) : null;
+        const cellXMin = xMin + (columnIndex / columns) * xRange;
+        const cellXMax = xMin + ((columnIndex + 1) / columns) * xRange;
+        const cellYMax = yMax - (rowIndex / rows) * yRange;
+        const cellYMin = yMax - ((rowIndex + 1) / rows) * yRange;
+
+        return `
+          <rect
+            x="${x.toFixed(2)}"
+            y="${y.toFixed(2)}"
+            width="${cellWidth.toFixed(2)}"
+            height="${cellHeight.toFixed(2)}"
+            rx="1.5"
+            class="${count ? "" : "cell-empty"}"
+            ${count ? `fill="${fill}"` : ""}
+          >
+            <title>${levelSeries.label} | x ${formatCoordinate(cellXMin)} to ${formatCoordinate(cellXMax)}, y ${formatCoordinate(cellYMin)} to ${formatCoordinate(cellYMax)} | ${count} events</title>
+          </rect>
+        `;
+      }).join("")).join("");
+
+      const xTicks = Array.from({ length: 5 }, (_, index) => {
+        const ratio = index / 4;
+        const value = xMin + ratio * xRange;
+        const x = margin.left + ratio * plotWidth;
+
+        return `
+          <line class="grid-line" x1="${x.toFixed(2)}" y1="${margin.top}" x2="${x.toFixed(2)}" y2="${(height - margin.bottom).toFixed(2)}"></line>
+          <text class="tick-label" x="${x.toFixed(2)}" y="${(height - margin.bottom + 20).toFixed(2)}" text-anchor="middle">${formatCoordinate(value)}</text>
+        `;
+      }).join("");
+
+      const yTicks = Array.from({ length: 5 }, (_, index) => {
+        const ratio = index / 4;
+        const value = yMin + ratio * yRange;
+        const y = height - margin.bottom - ratio * plotHeight;
+
+        return `
+          <line class="grid-line" x1="${margin.left}" y1="${y.toFixed(2)}" x2="${(width - margin.right).toFixed(2)}" y2="${y.toFixed(2)}"></line>
+          <text class="tick-label" x="${(margin.left - 10).toFixed(2)}" y="${(y + 4).toFixed(2)}" text-anchor="end">${formatCoordinate(value)}</text>
+        `;
+      }).join("");
+
+      return {
+        svg: `
+          <svg class="heatmap-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${levelSeries.label} death and retry heatmap">
+            ${cells}
+            ${xTicks}
+            ${yTicks}
+            <line class="axis-line" x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${(height - margin.bottom).toFixed(2)}"></line>
+            <line class="axis-line" x1="${margin.left}" y1="${(height - margin.bottom).toFixed(2)}" x2="${(width - margin.right).toFixed(2)}" y2="${(height - margin.bottom).toFixed(2)}"></line>
+            <text class="axis-title" x="${(width / 2).toFixed(2)}" y="${(height - 14).toFixed(2)}" text-anchor="middle">X Position</text>
+            <text class="axis-title" x="${(margin.left - 44).toFixed(2)}" y="${(margin.top - 6).toFixed(2)}">Y Position</text>
+          </svg>
+        `,
+        maxCellCount,
+        bounds: { xMin, xMax, yMin, yMax }
+      };
+    }
+
+    function buildGroupedBarChartSvg(series) {
+      const width = 640;
+      const height = 390;
+      const margin = { top: 24, right: 24, bottom: 64, left: 64 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      const values = series.flatMap(level => [level.withStarsAverage, level.withoutStarsAverage]).filter(Number.isFinite);
+      const maxValue = Math.max(...values, 1);
+      const yMax = Math.max(80, Math.ceil((maxValue * 1.18) / 10) * 10);
+      const yScale = value => margin.top + plotHeight - (value / yMax) * plotHeight;
+      const groupWidth = plotWidth / series.length;
+      const barWidth = Math.min(42, groupWidth * 0.24);
+      const pairGap = Math.min(16, groupWidth * 0.1);
+      const ticks = 6;
+
+      const yTicks = Array.from({ length: ticks + 1 }, (_, index) => {
+        const value = (yMax / ticks) * index;
+        const y = yScale(value);
+
+        return `
+          <line class="grid-line" x1="${margin.left}" y1="${y.toFixed(2)}" x2="${(width - margin.right).toFixed(2)}" y2="${y.toFixed(2)}"></line>
+          <text class="tick-label" x="${(margin.left - 10).toFixed(2)}" y="${(y + 4).toFixed(2)}" text-anchor="end">${Math.round(value)}s</text>
+        `;
+      }).join("");
+
+      const groups = series.map((level, index) => {
+        const groupCenterX = margin.left + (index + 0.5) * groupWidth;
+        const withStarsX = groupCenterX - pairGap / 2 - barWidth;
+        const withoutStarsX = groupCenterX + pairGap / 2;
+        const withStarsY = yScale(level.withStarsAverage);
+        const withoutStarsY = yScale(level.withoutStarsAverage);
+        const withStarsHeight = margin.top + plotHeight - withStarsY;
+        const withoutStarsHeight = margin.top + plotHeight - withoutStarsY;
+
+        return `
+          <rect class="bar-with-stars" x="${withStarsX.toFixed(2)}" y="${withStarsY.toFixed(2)}" width="${barWidth.toFixed(2)}" height="${withStarsHeight.toFixed(2)}" rx="4"></rect>
+          <rect class="bar-without-stars" x="${withoutStarsX.toFixed(2)}" y="${withoutStarsY.toFixed(2)}" width="${barWidth.toFixed(2)}" height="${withoutStarsHeight.toFixed(2)}" rx="4"></rect>
+          <text class="value-label" x="${(withStarsX + barWidth / 2).toFixed(2)}" y="${(withStarsY - 8).toFixed(2)}" text-anchor="middle">${level.withStarsAverage.toFixed(1)}s</text>
+          <text class="value-label" x="${(withoutStarsX + barWidth / 2).toFixed(2)}" y="${(withoutStarsY - 8).toFixed(2)}" text-anchor="middle">${level.withoutStarsAverage.toFixed(1)}s</text>
+          <text class="tick-label" x="${groupCenterX.toFixed(2)}" y="${(height - margin.bottom + 24).toFixed(2)}" text-anchor="middle">${level.label}</text>
+        `;
+      }).join("");
+
+      return `
+        <svg class="bar-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="Average detour time for star collection by level">
+          ${yTicks}
+          <line class="axis-line" x1="${margin.left}" y1="${margin.top}" x2="${margin.left}" y2="${(height - margin.bottom).toFixed(2)}"></line>
+          <line class="axis-line" x1="${margin.left}" y1="${(height - margin.bottom).toFixed(2)}" x2="${(width - margin.right).toFixed(2)}" y2="${(height - margin.bottom).toFixed(2)}"></line>
+          ${groups}
+          <text class="axis-title" x="${(width / 2).toFixed(2)}" y="${(height - 16).toFixed(2)}" text-anchor="middle">Levels</text>
+          <text class="axis-title" x="${(margin.left - 48).toFixed(2)}" y="${(margin.top - 6).toFixed(2)}">Time (s)</text>
+        </svg>
+      `;
+    }
+
+    function attachMetric2ButtonHandlers() {
+      elements.metric2.querySelectorAll("[data-level-key]").forEach(button => {
+        button.addEventListener("click", () => {
+          metric2State.activeLevelKey = button.dataset.levelKey;
+          renderMetric2View();
+        });
+      });
+    }
+
+    function renderMetric2View() {
+      const activeSeries = metric2State.series.find(level => level.key === metric2State.activeLevelKey) || metric2State.series[0];
+
+      if (!activeSeries) {
+        renderMetric2Empty("Metric 2 has not been initialized yet.");
+        return;
+      }
+
+      const buttonsMarkup = metric2State.series.map(level => `
+        <button
+          type="button"
+          class="level-button ${level.key === activeSeries.key ? "active" : ""}"
+          data-level-key="${level.key}"
+        >
+          ${level.label}
+        </button>
+      `).join("");
+
+      let contentMarkup = "";
+
+      if (!activeSeries.points.length) {
+        contentMarkup = `
+          <div class="metric-empty">
+            No coordinate events were found for ${activeSeries.label}. Add x/y data to the death or retry events for this level to populate the heatmap.
+          </div>
+        `;
+      } else {
+        const heatmap = buildHeatmapSvg(activeSeries);
+        const sourceLabel = activeSeries.sourceLabels.length ? activeSeries.sourceLabels.join(" + ") : "event";
+
+        contentMarkup = `
+          <div class="heatmap-stage">${heatmap.svg}</div>
+          <div class="heatmap-summary">
+            <span>Events: ${activeSeries.points.length}</span>
+            <span>Max Cell: ${heatmap.maxCellCount}</span>
+            <span>Source: ${sourceLabel}</span>
+          </div>
+          <p class="metric-note">
+            Each cell aggregates death or retry events by position for ${activeSeries.label}. Brighter cells mean more events landed in that area.
+          </p>
+        `;
+      }
+
+      elements.metric2.innerHTML = `
+        <div class="metric-stack">
+          <div class="metric-toolbar">
+            <div class="level-switcher">${buttonsMarkup}</div>
+          </div>
+          ${contentMarkup}
+        </div>
+      `;
+
+      attachMetric2ButtonHandlers();
+    }
+
+    function attachMetric3ButtonHandlers() {
+      elements.metric3.querySelectorAll("[data-level-key]").forEach(button => {
+        button.addEventListener("click", () => {
+          metric3State.activeLevelKey = button.dataset.levelKey;
+          renderMetric3View();
+        });
+      });
+    }
+
+    function renderDeathRetryMetric(data) {
+      const series = resolveMetric2Series(data);
+
+      if (!series.some(level => level.points.length)) {
+        renderMetric2Empty("Death / retry position data was not found. Expected x/y coordinates under retries or deaths for level1 to level3.");
+        return;
+      }
+
+      metric2State.series = series;
+
+      const preferredLevel = series.find(level => level.key === metric2State.activeLevelKey && level.points.length)
+        || series.find(level => level.points.length)
+        || series[0];
+
+      if (preferredLevel) {
+        metric2State.activeLevelKey = preferredLevel.key;
+      }
+
+      renderMetric2View();
+    }
+
+    function renderMetric3View() {
+      const activeSeries = metric3State.series.find(level => level.key === metric3State.activeLevelKey) || metric3State.series[0];
+
+      if (!activeSeries) {
+        renderMetric3Empty("Metric 3 has not been initialized yet.");
+        return;
+      }
+
+      const buttonsMarkup = metric3State.series.map(level => `
+        <button
+          type="button"
+          class="level-button ${level.key === activeSeries.key ? "active" : ""}"
+          data-level-key="${level.key}"
+        >
+          ${level.label}
+        </button>
+      `).join("");
+
+      let contentMarkup = "";
+
+      if (!activeSeries.points.length) {
+        contentMarkup = `
+          <div class="metric-empty">
+            No switch-position events were found for ${activeSeries.label}. Add x/y data to the shadow switch events for this level to populate the heatmap.
+          </div>
+        `;
+      } else {
+        const heatmap = buildHeatmapSvg(activeSeries);
+        const sourceLabel = activeSeries.sourceLabels.length ? activeSeries.sourceLabels.join(" + ") : "event";
+
+        contentMarkup = `
+          <div class="heatmap-stage">${heatmap.svg}</div>
+          <div class="heatmap-summary">
+            <span>Events: ${activeSeries.points.length}</span>
+            <span>Max Cell: ${heatmap.maxCellCount}</span>
+            <span>Source: ${sourceLabel}</span>
+          </div>
+          <p class="metric-note">
+            Each cell aggregates shadow state switch events by position for ${activeSeries.label}. Brighter cells mean more switches happened in that area.
+          </p>
+        `;
+      }
+
+      elements.metric3.innerHTML = `
+        <div class="metric-stack">
+          <div class="metric-toolbar">
+            <div class="level-switcher">${buttonsMarkup}</div>
+          </div>
+          ${contentMarkup}
+        </div>
+      `;
+
+      attachMetric3ButtonHandlers();
+    }
+
+    function renderShadowSwitchMetric(data) {
+      const series = resolveMetric3Series(data);
+
+      if (!series.some(level => level.points.length)) {
+        renderMetric3Empty("Shadow-switch position data was not found. Expected x/y coordinates under switches for level1 to level3.");
+        return;
+      }
+
+      metric3State.series = series;
+
+      const preferredLevel = series.find(level => level.key === metric3State.activeLevelKey && level.points.length)
+        || series.find(level => level.points.length)
+        || series[0];
+
+      if (preferredLevel) {
+        metric3State.activeLevelKey = preferredLevel.key;
+      }
+
+      renderMetric3View();
+    }
+
+    function renderDetourMetric(data) {
+      const withStarsNode = findLevelNode([
+        data?.["completion-times"]?.["all-collected"],
+        data?.["completion-times"]?.["with-stars"],
+        data?.["all-collected"],
+        data?.["with-stars"]
+      ]);
+
+      const withoutStarsNode = findLevelNode([
+        data?.["completion-times"]?.["missing-collectibles"],
+        data?.["completion-times"]?.["without-stars"],
+        data?.["completion-times"]?.["no-stars"],
+        data?.["missing-collectibles"],
+        data?.["without-stars"],
+        data?.["no-stars"]
+      ]);
+
+      if (!withStarsNode || !withoutStarsNode) {
+        renderMetric4Empty("Detour comparison data was not found. Expected completion-time nodes for both with stars and without stars.");
+        return;
+      }
+
+      const series = COMPLETION_LEVELS.map(level => {
+        const withStarsValues = collectCompletionSamples(withStarsNode[level.key]).filter(isPositiveNumber);
+        const withoutStarsValues = collectCompletionSamples(withoutStarsNode[level.key]).filter(isPositiveNumber);
+
+        return {
+          ...level,
+          withStarsAverage: withStarsValues.length ? mean(withStarsValues) : null,
+          withoutStarsAverage: withoutStarsValues.length ? mean(withoutStarsValues) : null,
+          withStarsCount: withStarsValues.length,
+          withoutStarsCount: withoutStarsValues.length
+        };
+      });
+
+      if (!series.every(level => Number.isFinite(level.withStarsAverage) && Number.isFinite(level.withoutStarsAverage))) {
+        renderMetric4Empty("Some levels are missing completion-time data for either with-stars or without-stars runs, so the detour comparison chart could not be completed.");
+        return;
+      }
+
+      elements.metric4.innerHTML = `
+        <div class="legend">
+          <div class="legend-item"><span class="legend-bar-stars"></span><span>Completion time with stars</span></div>
+          <div class="legend-item"><span class="legend-bar-no-stars"></span><span>Completion time without stars</span></div>
+        </div>
+        ${buildGroupedBarChartSvg(series)}
+        <p class="metric-note">
+          Each level shows two average completion times: one for runs that collected stars and one for runs without stars. This makes the detour cost visually comparable across levels.
+        </p>
+      `;
+    }
+
+    function transformFirebaseData(rawData) {
+      return rawData;
+    }
+
+    async function loadMetrics() {
+      setStatus(`Connecting | /${databasePath}`);
+
+      try {
+        const snapshot = await get(ref(db, databasePath));
+
+        if (!snapshot.exists()) {
+          setStatus(`No data | /${databasePath}`, "error");
+          renderMetric1Empty(`No Firebase data found at /${databasePath}.`);
+          renderMetric2Empty(`No Firebase data found at /${databasePath}.`);
+          renderMetric3Empty(`No Firebase data found at /${databasePath}.`);
+          renderMetric4Empty(`No Firebase data found at /${databasePath}.`);
+          return;
+        }
+
+        const data = transformFirebaseData(snapshot.val());
+        renderCompletionTimeMetric(data);
+        renderDeathRetryMetric(data);
+        renderShadowSwitchMetric(data);
+        renderDetourMetric(data);
+        setStatus(`Live | /${databasePath}`, "ok");
+      } catch (error) {
+        console.error(error);
+        setStatus("Firebase request failed", "error");
+        renderMetric1Empty("Could not load completion-time data from Firebase. Check the path, config, and browser console.");
+        renderMetric2Empty("Could not load death / retry heatmap data from Firebase. Check the path, config, and browser console.");
+        renderMetric3Empty("Could not load shadow-switch heatmap data from Firebase. Check the path, config, and browser console.");
+        renderMetric4Empty("Could not load detour comparison data from Firebase. Check the path, config, and browser console.");
+      }
+    }
+
+    loadMetrics();
+  </script>
+</body>
+</html>
