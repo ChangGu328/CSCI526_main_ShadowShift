@@ -51,10 +51,39 @@ public class RetryLogger : MonoBehaviour
     {
         public string levelId;
         public long timestamp;
-        public RetryEvent(string levelId)
+        public PositionData position;
+
+        public RetryEvent(string levelId, Vector3 position)
         {
             this.levelId = levelId;
             this.timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            this.position = new PositionData(position);
+        }
+    }
+
+    [Serializable]
+    private class PositionData
+    {
+        public float x;
+        public float y;
+
+        public PositionData(Vector3 position)
+        {
+            x = position.x;
+            y = position.y;
+        }
+    }
+
+    [Serializable]
+    private class RetryEventPayload
+    {
+        public long timestamp;
+        public PositionData position;
+
+        public RetryEventPayload(RetryEvent evt)
+        {
+            timestamp = evt.timestamp;
+            position = evt.position;
         }
     }
 
@@ -198,9 +227,9 @@ public class RetryLogger : MonoBehaviour
             return;
         }
 
-        var evt = new RetryEvent(levelId);
+        var evt = new RetryEvent(levelId, GetCurrentPlayerPosition());
         retryQueue.Enqueue(evt);
-        Debug.Log($"[RetryLogger] Enqueued retry for level {levelId} ts={evt.timestamp} (queue size {retryQueue.Count})");
+        Debug.Log($"[RetryLogger] Enqueued retry for level {levelId} ts={evt.timestamp} pos=({evt.position.x}, {evt.position.y}) (queue size {retryQueue.Count})");
 
         if (!isSending)
             StartCoroutine(ProcessQueueCoroutine());
@@ -428,7 +457,7 @@ public class RetryLogger : MonoBehaviour
         }
         url += $"?auth={UnityWebRequest.EscapeURL(tokenToUse)}";
 
-        string jsonBody = $"{{\"timestamp\":{evt.timestamp}}}";
+        string jsonBody = JsonUtility.ToJson(new RetryEventPayload(evt));
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonBody);
 
         using (UnityWebRequest req = new UnityWebRequest(url, "POST"))
@@ -469,5 +498,36 @@ public class RetryLogger : MonoBehaviour
     {
         try { return SceneManager.GetActiveScene().name; }
         catch { return "unknown_level"; }
+    }
+
+    private Vector3 GetCurrentPlayerPosition()
+    {
+        PlayerController playerController = FindFirstObjectByType<PlayerController>();
+        if (playerController != null)
+        {
+            Transform activeTransform = playerController.currentState == PLAYERSTATE.BODY
+                ? playerController.body?.transform
+                : playerController.soul?.transform;
+
+            if (activeTransform != null)
+            {
+                return activeTransform.position;
+            }
+        }
+
+        PlayerMove playerMove = FindFirstObjectByType<PlayerMove>();
+        if (playerMove != null)
+        {
+            return playerMove.transform.position;
+        }
+
+        GameObject taggedPlayer = GameObject.FindGameObjectWithTag("Player");
+        if (taggedPlayer != null)
+        {
+            return taggedPlayer.transform.position;
+        }
+
+        Debug.LogWarning("[RetryLogger] Player position not found; using Vector3.zero.");
+        return Vector3.zero;
     }
 }
