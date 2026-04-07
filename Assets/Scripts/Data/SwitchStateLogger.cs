@@ -42,11 +42,39 @@ public class SwitchStateLogger : MonoBehaviour
     {
         public string levelId;
         public long timestamp;
+        public PositionData position;
 
-        public SwitchStateEvent(string levelId)
+        public SwitchStateEvent(string levelId, Vector3 position)
         {
             this.levelId = levelId;
             this.timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            this.position = new PositionData(position);
+        }
+    }
+
+    [Serializable]
+    private class PositionData
+    {
+        public float x;
+        public float y;
+
+        public PositionData(Vector3 position)
+        {
+            x = position.x;
+            y = position.y;
+        }
+    }
+
+    [Serializable]
+    private class SwitchStateEventPayload
+    {
+        public long timestamp;
+        public PositionData position;
+
+        public SwitchStateEventPayload(SwitchStateEvent evt)
+        {
+            timestamp = evt.timestamp;
+            position = evt.position;
         }
     }
 
@@ -165,9 +193,9 @@ public class SwitchStateLogger : MonoBehaviour
             return;
         }
 
-        var evt = new SwitchStateEvent(levelId);
+        var evt = new SwitchStateEvent(levelId, GetCurrentPlayerPosition());
         switchQueue.Enqueue(evt);
-        Debug.Log($"[SwitchStateLogger] Enqueued switch for level {levelId} ts={evt.timestamp} (queue size {switchQueue.Count})");
+        Debug.Log($"[SwitchStateLogger] Enqueued switch for level {levelId} ts={evt.timestamp} pos=({evt.position.x}, {evt.position.y}) (queue size {switchQueue.Count})");
 
         if (!isSending)
         {
@@ -401,7 +429,7 @@ public class SwitchStateLogger : MonoBehaviour
 
         url += $"?auth={UnityWebRequest.EscapeURL(idToken)}";
 
-        string jsonBody = $"{{\"timestamp\":{evt.timestamp}}}";
+        string jsonBody = JsonUtility.ToJson(new SwitchStateEventPayload(evt));
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonBody);
 
         using (UnityWebRequest req = new UnityWebRequest(url, "POST"))
@@ -443,5 +471,36 @@ public class SwitchStateLogger : MonoBehaviour
     {
         try { return SceneManager.GetActiveScene().name; }
         catch { return "unknown_level"; }
+    }
+
+    private Vector3 GetCurrentPlayerPosition()
+    {
+        PlayerController playerController = FindFirstObjectByType<PlayerController>();
+        if (playerController != null)
+        {
+            Transform activeTransform = playerController.currentState == PLAYERSTATE.BODY
+                ? playerController.body?.transform
+                : playerController.soul?.transform;
+
+            if (activeTransform != null)
+            {
+                return activeTransform.position;
+            }
+        }
+
+        PlayerMove playerMove = FindFirstObjectByType<PlayerMove>();
+        if (playerMove != null)
+        {
+            return playerMove.transform.position;
+        }
+
+        GameObject taggedPlayer = GameObject.FindGameObjectWithTag("Player");
+        if (taggedPlayer != null)
+        {
+            return taggedPlayer.transform.position;
+        }
+
+        Debug.LogWarning("[SwitchStateLogger] Player position not found; using Vector3.zero.");
+        return Vector3.zero;
     }
 }
