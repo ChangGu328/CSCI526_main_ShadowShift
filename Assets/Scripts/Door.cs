@@ -19,20 +19,16 @@ public class Door : MonoBehaviour
     {
         CacheDoorBounds();
         animator = GetComponent<Animator>();
+        Debug.Log("animator=" + animator);
         doorsOpen = false;
+        Debug.Log("Start: doorsOpen=" + doorsOpen + " sw.isOn=" + sw.isOn);
         if (animator != null)
             animator.SetBool("IsOpen", false);
     }
 
     void Update()
     {
-        if (animator != null)
-        {
-            var info = animator.GetCurrentAnimatorStateInfo(0);
-            Debug.Log("State IsOpening: " + info.IsName("Portal_blue_opening") +
-                      " | IsIdle: " + info.IsName("Portal_blue_idle") +
-                      " | IsOpen bool: " + animator.GetBool("IsOpen"));
-        }
+        Debug.Log("sw=" + sw + " | sw.isOn=" + (sw != null ? sw.isOn.ToString() : "NULL") + " | doorsOpen=" + doorsOpen);
 
         if (sw.isOn)
         {
@@ -42,7 +38,14 @@ public class Door : MonoBehaviour
                 rightDoor.SetActive(false);
                 doorsOpen = true;
                 if (animator != null)
+                {
+                    Debug.Log("Door opening! sw.isOn = " + sw.isOn);
                     animator.SetBool("IsOpen", true);
+                }
+                else
+                {
+                    Debug.Log("animator is NULL!");
+                }
             }
         }
         else
