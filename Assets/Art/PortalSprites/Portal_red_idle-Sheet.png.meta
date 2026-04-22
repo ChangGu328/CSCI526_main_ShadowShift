@@ -1,0 +1,520 @@
+fileFormatVersion: 2
+guid: c4a22bf8d6006874eae8eab5fe298472
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -1935815258583162343
+    second: Portal_red_idle-Sheet_0
+  - first:
+      213: 5095081815132230623
+    second: Portal_red_idle-Sheet_1
+  - first:
+      213: 4429161418886130854
+    second: Portal_red_idle-Sheet_2
+  - first:
+      213: 4441241407558636239
+    second: Portal_red_idle-Sheet_3
+  - first:
+      213: 3758739274385242944
+    second: Portal_red_idle-Sheet_4
+  - first:
+      213: -2686532343688849871
+    second: Portal_red_idle-Sheet_5
+  - first:
+      213: -1171291540012822431
+    second: Portal_red_idle-Sheet_6
+  - first:
+      213: 2207262336695192383
+    second: Portal_red_idle-Sheet_7
+  - first:
+      213: -8348704758649991789
+    second: Portal_red_idle-Sheet_8
+  - first:
+      213: -3628989046917223434
+    second: Portal_red_idle-Sheet_9
+  - first:
+      213: 675084885207552993
+    second: Portal_red_idle-Sheet_10
+  - first:
+      213: -2065479599908709230
+    second: Portal_red_idle-Sheet_11
+  - first:
+      213: 3279417660214928671
+    second: Portal_red_idle-Sheet_12
+  - first:
+      213: 8195367939796321758
+    second: Portal_red_idle-Sheet_13
+  - first:
+      213: 4090666025788563162
+    second: Portal_red_idle-Sheet_14
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 912ae59574a9225e0800000000000000
+      internalID: -1935815258583162343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fd3528c7aed55b640800000000000000
+      internalID: 5095081815132230623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6aca29108da877d30800000000000000
+      internalID: 4429161418886130854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc2d94b878572ad30800000000000000
+      internalID: 4441241407558636239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 767
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 04bba059479b92430800000000000000
+      internalID: 3758739274385242944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 957
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13614d8311587bad0800000000000000
+      internalID: -2686532343688849871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 1147
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1609d15dc8cbebfe0800000000000000
+      internalID: -1171291540012822431
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 1337
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f3bc0d09665c1ae10800000000000000
+      internalID: 2207262336695192383
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_8
+      rect:
+        serializedVersion: 2
+        x: 1527
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39dcd0e5141732c80800000000000000
+      internalID: -8348704758649991789
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_9
+      rect:
+        serializedVersion: 2
+        x: 1717
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6fb27b460bd33adc0800000000000000
+      internalID: -3628989046917223434
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_10
+      rect:
+        serializedVersion: 2
+        x: 1907
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e3180850226e5900800000000000000
+      internalID: 675084885207552993
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_11
+      rect:
+        serializedVersion: 2
+        x: 2097
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 29c10ac4f31f553e0800000000000000
+      internalID: -2065479599908709230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_12
+      rect:
+        serializedVersion: 2
+        x: 2287
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f15e043acf4d28d20800000000000000
+      internalID: 3279417660214928671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_13
+      rect:
+        serializedVersion: 2
+        x: 2477
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ed54f2768bbcbb170800000000000000
+      internalID: 8195367939796321758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Portal_red_idle-Sheet_14
+      rect:
+        serializedVersion: 2
+        x: 2667
+        y: 10
+        width: 178
+        height: 166
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aded2e1c317f4c830800000000000000
+      internalID: 4090666025788563162
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Portal_red_idle-Sheet_0: -1935815258583162343
+      Portal_red_idle-Sheet_1: 5095081815132230623
+      Portal_red_idle-Sheet_10: 675084885207552993
+      Portal_red_idle-Sheet_11: -2065479599908709230
+      Portal_red_idle-Sheet_12: 3279417660214928671
+      Portal_red_idle-Sheet_13: 8195367939796321758
+      Portal_red_idle-Sheet_14: 4090666025788563162
+      Portal_red_idle-Sheet_2: 4429161418886130854
+      Portal_red_idle-Sheet_3: 4441241407558636239
+      Portal_red_idle-Sheet_4: 3758739274385242944
+      Portal_red_idle-Sheet_5: -2686532343688849871
+      Portal_red_idle-Sheet_6: -1171291540012822431
+      Portal_red_idle-Sheet_7: 2207262336695192383
+      Portal_red_idle-Sheet_8: -8348704758649991789
+      Portal_red_idle-Sheet_9: -3628989046917223434
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
