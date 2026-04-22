@@ -1,12 +1,18 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.InputSystem;
 
 public class Hazard : MonoBehaviour
 {
+    private const string DefaultDeathHintObjectName = "Text (Died)";
+
     public GameObject hintUI; // "Press R to Restart" UI
 
     private bool playerDead = false;
+
+    private void Awake()
+    {
+        hintUI = ResolveHintUI();
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -16,6 +22,7 @@ public class Hazard : MonoBehaviour
         if (collision.gameObject.layer == LayerMask.NameToLayer("Player_Body"))
         {
             playerDead = true;
+            hintUI = ResolveHintUI();
 
             // Show restart hint
             if (hintUI != null)
@@ -31,5 +38,48 @@ public class Hazard : MonoBehaviour
     private void Update()
     {
 
+    }
+
+    private GameObject ResolveHintUI()
+    {
+        if (hintUI != null)
+        {
+            return hintUI;
+        }
+
+        Scene activeScene = SceneManager.GetActiveScene();
+        if (!activeScene.IsValid())
+        {
+            return null;
+        }
+
+        GameObject[] rootObjects = activeScene.GetRootGameObjects();
+        for (int i = 0; i < rootObjects.Length; i++)
+        {
+            GameObject match = FindChildByName(rootObjects[i].transform, DefaultDeathHintObjectName);
+            if (match != null)
+            {
+                return match;
+            }
+        }
+
+        return null;
+    }
+
+    private static GameObject FindChildByName(Transform root, string targetName)
+    {
+        if (root == null) return null;
+        if (root.name == targetName) return root.gameObject;
+
+        for (int i = 0; i < root.childCount; i++)
+        {
+            GameObject match = FindChildByName(root.GetChild(i), targetName);
+            if (match != null)
+            {
+                return match;
+            }
+        }
+
+        return null;
     }
 }
