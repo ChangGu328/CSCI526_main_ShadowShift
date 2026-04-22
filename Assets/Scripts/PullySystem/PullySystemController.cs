@@ -75,6 +75,7 @@ public class PulleySystemController : MonoBehaviour
     // Buffers
     private readonly Collider2D[] contactBuffer = new Collider2D[32];
     private readonly HashSet<Rigidbody2D> uniqueBodies = new HashSet<Rigidbody2D>();
+    private readonly Queue<Rigidbody2D> supportedBodyQueue = new Queue<Rigidbody2D>();
     private readonly RaycastHit2D[] castBuffer = new RaycastHit2D[8];
 
     private void Awake()
@@ -225,27 +226,41 @@ public class PulleySystemController : MonoBehaviour
     {
         if (platform == null) return 0f;
 
-        int count = platform.GetContacts(contactBuffer);
         uniqueBodies.Clear();
+        supportedBodyQueue.Clear();
+
         float total = 0f;
-        float platformTopY = GetPlatformTopY(platform);
+        EnqueueSupportedBodies(platform, GetPlatformTopY(platform));
+
+        while (supportedBodyQueue.Count > 0)
+        {
+            Rigidbody2D body = supportedBodyQueue.Dequeue();
+            total += body.mass;
+            EnqueueSupportedBodies(body, GetPlatformTopY(body));
+        }
+
+        return total;
+    }
+
+    private void EnqueueSupportedBodies(Rigidbody2D supportBody, float supportTopY)
+    {
         const float aboveTopTolerance = 0.01f;
 
+        int count = supportBody.GetContacts(contactBuffer);
         for (int i = 0; i < count; i++)
         {
             Collider2D col = contactBuffer[i];
             if (col == null) continue;
 
-            Rigidbody2D rb = col.attachedRigidbody;
-            if (rb == null || rb == platform) continue;
-            if (rb.bodyType != RigidbodyType2D.Dynamic) continue;
-            if (rb.position.y <= platformTopY - aboveTopTolerance) continue;
-            if (!uniqueBodies.Add(rb)) continue;
+            Rigidbody2D candidate = col.attachedRigidbody;
+            if (candidate == null || candidate == supportBody) continue;
+            if (candidate == leftPlatform || candidate == rightPlatform) continue;
+            if (candidate.bodyType != RigidbodyType2D.Dynamic) continue;
+            if (col.bounds.min.y <= supportTopY - aboveTopTolerance) continue;
+            if (!uniqueBodies.Add(candidate)) continue;
 
-            total += rb.mass;
+            supportedBodyQueue.Enqueue(candidate);
         }
-
-        return total;
     }
 
     private float GetPlatformTopY(Rigidbody2D platform)
