@@ -50,6 +50,10 @@ MonoBehaviour:
   currentState: 0
   body: {fileID: 8071288056043463285}
   soul: {fileID: 7014634129283823626}
+  shadowEnterOffsetX: 0.3
+  returnMoveDuration: 0.5
+  bodyAnimator: {fileID: 0}
+  hudManager: {fileID: 0}
 --- !u!114 &3931556158282952505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -243,9 +247,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad7653daa266b1a43903cd46975b8c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMove
-  speed: 5
+  lastPortalTime: -999
+  maxMoveSpeed: 6
+  groundAcceleration: 55
+  groundDeceleration: 70
+  airAcceleration: 35
+  airDeceleration: 30
   canJump: 0
   jumpForce: 7
+  coyoteTime: 0.12
+  jumpBufferTime: 0.12
+  jumpCutMultiplier: 0.5
+  fallGravityMultiplier: 2
+  lowJumpGravityMultiplier: 1.5
+  maxFallSpeed: 18
+  useRigidbodyInterpolation: 1
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 0
+  groundCheckBoxSize: {x: 0.7, y: 0.1}
+  groundCheckOffsetY: 0.06
 --- !u!1 &8071288056043463285
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,6 +280,7 @@ GameObject:
   - component: {fileID: 7934445401705956127}
   - component: {fileID: 5645488049685869513}
   - component: {fileID: 5848236770061438938}
+  - component: {fileID: 1021444875218554988}
   m_Layer: 8
   m_Name: Player_Body
   m_TagString: Untagged
@@ -425,6 +447,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad7653daa266b1a43903cd46975b8c54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMove
-  speed: 5
+  lastPortalTime: -999
+  maxMoveSpeed: 6
+  groundAcceleration: 55
+  groundDeceleration: 70
+  airAcceleration: 35
+  airDeceleration: 30
   canJump: 1
   jumpForce: 15
+  coyoteTime: 0.12
+  jumpBufferTime: 0.12
+  jumpCutMultiplier: 0.5
+  fallGravityMultiplier: 2
+  lowJumpGravityMultiplier: 1.5
+  maxFallSpeed: 18
+  useRigidbodyInterpolation: 1
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 0
+  groundCheckBoxSize: {x: 0.7, y: 0.1}
+  groundCheckOffsetY: 0.06
+--- !u!95 &1021444875218554988
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8071288056043463285}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: e5afc69ee904744d987ecc41eb987d8e, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

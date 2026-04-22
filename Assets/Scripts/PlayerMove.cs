@@ -43,6 +43,8 @@ public class PlayerMove : MonoBehaviour
 	private float jumpBufferTimer;
 	private bool isGrounded;
 
+	public bool IsGrounded => isGrounded;
+
 	private void Awake()
 	{
 		rb = GetComponent<Rigidbody2D>();
