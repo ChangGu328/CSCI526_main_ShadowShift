@@ -110,8 +110,14 @@ public class PlayerMove : MonoBehaviour
 				horizontal += 1f;
 			}
 
-			keyboardJumpPressed = Keyboard.current.wKey.wasPressedThisFrame;
-			keyboardJumpHeld = Keyboard.current.wKey.isPressed;
+			bool wJumpPressed = Keyboard.current.wKey.wasPressedThisFrame;
+			bool spaceJumpPressed = Keyboard.current.spaceKey.wasPressedThisFrame;
+			bool wJumpHeld = Keyboard.current.wKey.isPressed;
+			bool spaceJumpHeld = Keyboard.current.spaceKey.isPressed;
+
+			// Merge jump keys into a single request so W/Space pressed together still counts as one jump.
+			keyboardJumpPressed = wJumpPressed || spaceJumpPressed;
+			keyboardJumpHeld = wJumpHeld || spaceJumpHeld;
 		}
 
 		if (Gamepad.current != null)
