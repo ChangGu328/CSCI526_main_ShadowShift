@@ -28,23 +28,23 @@ public class PortalEntranceVisual : MonoBehaviour
         bool blueHalf = (blueRoute.bodyPlate.IsPressed || blueRoute.soulPlate.IsPressed) && !blueOpen;
 
         if (redOpen)
-            SetColor(1f, 0f);
+            SetColor(1f, 0f, 1f);
         else if (blueOpen)
-            SetColor(0f, 1f);
+            SetColor(0f, 1f, 1f);
         else if (redHalf)
-            SetColor(0.8f, 0.2f);
+            SetColor(0.8f, 0.2f, 0.6f);
         else if (blueHalf)
-            SetColor(0.2f, 0.8f);
+            SetColor(0.2f, 0.8f, 0.6f);
         else
         {
             float t = Mathf.PingPong(Time.time * pingPongSpeed, 1f);
-            SetColor(t, 1f - t);
+            SetColor(t, 1f - t, 0.3f);
         }
     }
 
-    void SetColor(float redAlpha, float blueAlpha)
+    void SetColor(float redAlpha, float blueAlpha, float brightness = 1f)
     {
-        portalRed.color  = new Color(1, 1, 1, redAlpha);
-        portalBlue.color = new Color(1, 1, 1, blueAlpha);
+        portalRed.color  = new Color(brightness, brightness, brightness, redAlpha);
+        portalBlue.color = new Color(brightness, brightness, brightness, blueAlpha);
     }
 }
