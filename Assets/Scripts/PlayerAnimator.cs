@@ -15,8 +15,8 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private PlayerMove playerMove;
 
-    [Tooltip("Velocity below this magnitude is treated as idle.")]
-    [SerializeField] private float moveThreshold = 0.1f;
+    [Tooltip("Velocity below this magnitude is treated as idle. Higher values resist physics jitter.")]
+    [SerializeField] private float moveThreshold = 0.5f;
 
     [Tooltip("Set true if the source sprites face left by default.")]
     [SerializeField] private bool spriteFacesLeftByDefault = false;
