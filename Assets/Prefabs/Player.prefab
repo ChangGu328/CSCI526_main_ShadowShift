@@ -52,7 +52,7 @@ MonoBehaviour:
   soul: {fileID: 7014634129283823626}
   shadowEnterOffsetX: 0.3
   returnMoveDuration: 0.5
-  bodyAnimator: {fileID: 0}
+  bodyAnimator: {fileID: 1433328428585918123}
   hudManager: {fileID: 0}
 --- !u!114 &3931556158282952505
 MonoBehaviour:
@@ -280,7 +280,8 @@ GameObject:
   - component: {fileID: 7934445401705956127}
   - component: {fileID: 5645488049685869513}
   - component: {fileID: 5848236770061438938}
-  - component: {fileID: 1021444875218554988}
+  - component: {fileID: 5245348174587831211}
+  - component: {fileID: 1433328428585918123}
   m_Layer: 8
   m_Name: Player_Body
   m_TagString: Untagged
@@ -298,7 +299,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -0.04, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.75, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4396514783510546919}
@@ -352,7 +353,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
+  m_Sprite: {fileID: 7350763077466755852, guid: a57641c3f7438486584d0bfba3662827, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -423,17 +424,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.009140253, y: 0.5849577}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    pivot: {x: 0.5, y: 0}
+    oldSize: {x: 0.625, y: 1.104814}
     newSize: {x: 1, y: 2}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.72580004, y: 1.1462395}
   m_EdgeRadius: 0
 --- !u!114 &5848236770061438938
 MonoBehaviour:
@@ -454,7 +455,7 @@ MonoBehaviour:
   airAcceleration: 35
   airDeceleration: 30
   canJump: 1
-  jumpForce: 15
+  jumpForce: 16
   coyoteTime: 0.12
   jumpBufferTime: 0.12
   jumpCutMultiplier: 0.5
@@ -467,7 +468,7 @@ MonoBehaviour:
     m_Bits: 0
   groundCheckBoxSize: {x: 0.7, y: 0.1}
   groundCheckOffsetY: 0.06
---- !u!95 &1021444875218554988
+--- !u!95 &5245348174587831211
 Animator:
   serializedVersion: 7
   m_ObjectHideFlags: 0
@@ -477,7 +478,7 @@ Animator:
   m_GameObject: {fileID: 8071288056043463285}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: e5afc69ee904744d987ecc41eb987d8e, type: 2}
+  m_Controller: {fileID: 9100000, guid: f44c6a39cd2254faa80ea57c917720a0, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -489,3 +490,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1433328428585918123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8071288056043463285}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bf883064efee4f9aaa0212c544927c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimator
+  animator: {fileID: 5245348174587831211}
+  spriteRenderer: {fileID: 6881356400700521983}
+  rb: {fileID: 7934445401705956127}
+  playerMove: {fileID: 5848236770061438938}
+  moveThreshold: 0.1
+  spriteFacesLeftByDefault: 0
