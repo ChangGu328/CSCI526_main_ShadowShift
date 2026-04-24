@@ -32,6 +32,8 @@ public class PlayerMove : MonoBehaviour
 	public Vector2 groundCheckBoxSize = new Vector2(0.7f, 0.1f);
 	public float groundCheckOffsetY = 0.06f;
 
+	public bool canMove = true;
+
 	private Rigidbody2D rb;
 	private Collider2D col;
 
@@ -94,6 +96,14 @@ public class PlayerMove : MonoBehaviour
 
 	private void ReadInput()
 	{
+		if (!canMove)
+		{
+			moveInputX = 0f;
+			jumpPressedThisFrame = false;
+			jumpHeld = false;
+			return;
+		}
+
 		float horizontal = 0f;
 		bool keyboardJumpPressed = false;
 		bool keyboardJumpHeld = false;
@@ -115,7 +125,6 @@ public class PlayerMove : MonoBehaviour
 			bool wJumpHeld = Keyboard.current.wKey.isPressed;
 			bool spaceJumpHeld = Keyboard.current.spaceKey.isPressed;
 
-			// Merge jump keys into a single request so W/Space pressed together still counts as one jump.
 			keyboardJumpPressed = wJumpPressed || spaceJumpPressed;
 			keyboardJumpHeld = wJumpHeld || spaceJumpHeld;
 		}
@@ -217,6 +226,7 @@ public class PlayerMove : MonoBehaviour
 
 		return hit.collider != null && hit.normal.y > 0.5f;
 	}
+
 	public void Stop()
 	{
 		moveInputX = 0f;
