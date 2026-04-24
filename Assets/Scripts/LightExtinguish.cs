@@ -236,6 +236,7 @@ public class LightExtinguish : MonoBehaviour
         }
 
         player.currentState = PLAYERSTATE.BODY;
+        player.NotifyForcedReturnToBody();
 
         // Cooldown period
         yield return new WaitForSeconds(cooldownTime);
