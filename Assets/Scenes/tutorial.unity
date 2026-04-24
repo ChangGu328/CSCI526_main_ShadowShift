@@ -8284,6 +8284,10 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 1504540857935488444, guid: 606b08becf7b84096937e3e42b822aec, type: 3}
+      propertyPath: blockerMask.m_Bits
+      value: 31539
+      objectReference: {fileID: 0}
     - target: {fileID: 3585322022021745403, guid: 606b08becf7b84096937e3e42b822aec, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.19
@@ -8327,6 +8331,22 @@ PrefabInstance:
     - target: {fileID: 4159964532472990399, guid: 606b08becf7b84096937e3e42b822aec, type: 3}
       propertyPath: m_Name
       value: Lamp
+      objectReference: {fileID: 0}
+    - target: {fileID: 8379904370430678116, guid: 606b08becf7b84096937e3e42b822aec, type: 3}
+      propertyPath: m_Color.a
+      value: 0.08627451
+      objectReference: {fileID: 0}
+    - target: {fileID: 8379904370430678116, guid: 606b08becf7b84096937e3e42b822aec, type: 3}
+      propertyPath: m_Color.b
+      value: 0.074893214
+      objectReference: {fileID: 0}
+    - target: {fileID: 8379904370430678116, guid: 606b08becf7b84096937e3e42b822aec, type: 3}
+      propertyPath: m_Color.g
+      value: 0.90055966
+      objectReference: {fileID: 0}
+    - target: {fileID: 8379904370430678116, guid: 606b08becf7b84096937e3e42b822aec, type: 3}
+      propertyPath: m_Color.r
+      value: 0.9339623
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
