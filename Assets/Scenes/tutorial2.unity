@@ -831,6 +831,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f905be532b281324886ad193e63c9b6f, type: 3}
+--- !u!4 &192804363 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1775508413411688324, guid: f905be532b281324886ad193e63c9b6f, type: 3}
+  m_PrefabInstance: {fileID: 192804362}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &205067517
 GameObject:
   m_ObjectHideFlags: 0
@@ -5569,7 +5574,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1291291445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6920,6 +6925,7 @@ Transform:
   - {fileID: 938159160}
   - {fileID: 1015479426}
   - {fileID: 1837048749}
+  - {fileID: 192804363}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1615481908
