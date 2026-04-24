@@ -52,6 +52,14 @@ public class PlayerController : MonoBehaviour
 
         currentState = PLAYERSTATE.Soul;
         soul.transform.position = body.transform.position + new Vector3(shadowEnterOffsetX, 0f, 0f);
+        // Always reset rotation so a previously toppled soul (e.g. from a past collision) doesn't reappear sideways
+        soul.transform.rotation = Quaternion.identity;
+        Rigidbody2D soulRb = soul.GetComponent<Rigidbody2D>();
+        if (soulRb != null)
+        {
+            soulRb.angularVelocity = 0f;
+            soulRb.linearVelocity = Vector2.zero;
+        }
         soul.SetActive(true);
 
         soul.GetComponent<PlayerMove>().enabled = true;
@@ -135,5 +143,13 @@ public class PlayerController : MonoBehaviour
         hudManager?.UpdateFormUI(PLAYERSTATE.BODY);
 
         isTransitioning = false;
+    }
+
+    // Called by external systems (e.g. LightExtinguish) that forcibly send the player back to body
+    // without the normal slide animation. Updates anim + HUD so they stay in sync with state.
+    public void NotifyForcedReturnToBody()
+    {
+        bodyAnimator?.PlayExitShadow();
+        hudManager?.UpdateFormUI(PLAYERSTATE.BODY);
     }
 }
