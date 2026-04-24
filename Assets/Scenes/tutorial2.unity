@@ -6511,6 +6511,7 @@ Transform:
   - {fileID: 938159160}
   - {fileID: 1015479426}
   - {fileID: 1837048749}
+  - {fileID: 192804363}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1615481908
