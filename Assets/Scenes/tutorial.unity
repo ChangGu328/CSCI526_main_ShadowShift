@@ -669,8 +669,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.75000006, y: 0.8034815}
   m_AnchorMax: {x: 0.75000006, y: 0.8034815}
-  m_AnchoredPosition: {x: -144, y: -82}
-  m_SizeDelta: {x: 250, y: 50}
+  m_AnchoredPosition: {x: -134.5, y: -90.167786}
+  m_SizeDelta: {x: 269, y: 66.3356}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &114765449
 MonoBehaviour:
@@ -692,10 +692,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Only <color=#00BFFF>Shadow</color> passes through Soul Wall
+  m_text: Only <color=#00BFFF>Shadow</color> passes through Iron Fence
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9a14a8a1184c5f14fbce3338ea4d7a35, type: 2}
+  m_sharedMaterial: {fileID: 1260715531048141648, guid: 9a14a8a1184c5f14fbce3338ea4d7a35, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1736,8 +1736,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.91039586, y: 0.83500004}
   m_AnchorMax: {x: 0.91039586, y: 0.83500004}
-  m_AnchoredPosition: {x: -105, y: -94}
-  m_SizeDelta: {x: 300, y: 50}
+  m_AnchoredPosition: {x: -98.562256, y: -101.48169}
+  m_SizeDelta: {x: 312.8755, y: 64.9633}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &354939157
 MonoBehaviour:
@@ -1761,8 +1761,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Only <color=yellow>Entity</color> triggers the victory flag
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9a14a8a1184c5f14fbce3338ea4d7a35, type: 2}
+  m_sharedMaterial: {fileID: 1260715531048141648, guid: 9a14a8a1184c5f14fbce3338ea4d7a35, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2532,8 +2532,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: <color=#00BFFF>Shadow</color> vanishes in <color=yellow>Light</color>!
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9a14a8a1184c5f14fbce3338ea4d7a35, type: 2}
+  m_sharedMaterial: {fileID: 1260715531048141648, guid: 9a14a8a1184c5f14fbce3338ea4d7a35, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4699,7 +4699,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 472, y: 794}
-  m_SizeDelta: {x: 294.0332, y: 72.9435}
+  m_SizeDelta: {x: 342.5601, y: 72.9435}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &1215093419
 MonoBehaviour:
@@ -4735,8 +4735,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "<color=yellow>Bonus</color>  for \ncollect all <color=yellow>Collectibles</color>"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9a14a8a1184c5f14fbce3338ea4d7a35, type: 2}
+  m_sharedMaterial: {fileID: 1260715531048141648, guid: 9a14a8a1184c5f14fbce3338ea4d7a35, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -6356,8 +6356,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.33541036, y: 0.32836542}
   m_AnchorMax: {x: 0.33541036, y: 0.32836542}
-  m_AnchoredPosition: {x: 47, y: -13}
-  m_SizeDelta: {x: 300, y: 50}
+  m_AnchoredPosition: {x: 79.8845, y: -23.2655}
+  m_SizeDelta: {x: 365.769, y: 70.5311}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1690892180
 MonoBehaviour:
@@ -6384,8 +6384,8 @@ MonoBehaviour:
     Press <color=yellow>Q</color>
     switch to Shadow'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9a14a8a1184c5f14fbce3338ea4d7a35, type: 2}
+  m_sharedMaterial: {fileID: 1260715531048141648, guid: 9a14a8a1184c5f14fbce3338ea4d7a35, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -9016,8 +9016,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.51500005, y: 0.3}
   m_AnchorMax: {x: 0.51500005, y: 0.3}
-  m_AnchoredPosition: {x: 37, y: 18}
-  m_SizeDelta: {x: 300, y: 50}
+  m_AnchoredPosition: {x: 49.8097, y: 15.712}
+  m_SizeDelta: {x: 325.6194, y: 54.577}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2058131698
 MonoBehaviour:
@@ -9042,7 +9042,7 @@ MonoBehaviour:
   m_text: "<color=yellow>Buttons</color>: Entity form only\r\nPress <color=yellow>Q</color>
     \u2192 back to Entity"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9a14a8a1184c5f14fbce3338ea4d7a35, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -9109,7 +9109,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &2058131699
