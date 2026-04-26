@@ -9,15 +9,20 @@ public class ProximityTextTrigger : MonoBehaviour
     [Header("Distance")]
     public float triggerRadius = 3f;
 
+    [Header("Tutorial Panel (Optional)")]
+    public TutorialPanel tutorialPanel;
+    public string tutorialMessage;
+    public bool usePanel = false;
+
     private Transform playerBody;
     private Transform playerSoul;
     private PlayerController playerController;
+    private bool hasTriggered = false; 
 
     private void Start()
     {
         if (targetText != null)
             targetText.gameObject.SetActive(false);
-
         GameObject player = GameObject.FindWithTag("Player");
         if (player != null)
         {
@@ -29,7 +34,7 @@ public class ProximityTextTrigger : MonoBehaviour
 
     private void Update()
     {
-        if (targetText == null || playerController == null) return;
+        if (playerController == null) return;
 
         Transform activeTransform = playerController.currentState == PLAYERSTATE.BODY
             ? playerBody 
@@ -38,7 +43,17 @@ public class ProximityTextTrigger : MonoBehaviour
         if (activeTransform == null) return;
 
         float dist = Vector2.Distance(transform.position, activeTransform.position);
-        targetText.gameObject.SetActive(dist <= triggerRadius);
+
+
+        if (targetText != null)
+            targetText.gameObject.SetActive(dist <= triggerRadius);
+
+    
+        if (usePanel && !hasTriggered && tutorialPanel != null && dist <= triggerRadius)
+        {
+            hasTriggered = true;
+            tutorialPanel.Show(tutorialMessage);
+        }
     }
 
     private void OnDrawGizmosSelected()
